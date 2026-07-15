@@ -18,12 +18,12 @@ Fanpy Pro is the **backend companion** for the Fanpy Card. While the card provid
 ## Features
 
 - ✅ **Multi-step setup wizard** — area selection, mode choice, light/features toggles, gateway configuration
-- ✅ **Two integration modes**: Remote (Gateway RF) and Direct (native `switch.*` / `light.*` entities)
-- ✅ **Automatic entity creation** (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
-- ✅ **Automatic entity creation** (Direct): `select.*` only (speed selector + timer count) â€” fan/light entities managed externally
-- ✅ **State persistence** â€” entities restore their last state after HA restart (power, speed, light)
-- ✅ **Timer support** â€” configurable number of timer buttons (0â€“3), exposed via a `select.fanpypro_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
-- ✅ **Multi-language support**: English, Spanish, Catalan
+- ✅ **Two integration modes** — Remote (Gateway RF) and Direct (native `switch.*` / `light.*` entities)
+- ✅ **Automatic entity creation** — (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
+- ✅ **Automatic entity creation** — (Direct): `select.*` only (speed selector + timer count) — fan/light entities managed externally
+- ✅ **State persistence** — entities restore their last state after HA restart (power, speed, light)
+- ✅ **Timer support** — configurable number of timer buttons (0-3), exposed via a `select.fanpypro_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
+- ✅ **Multi-language support** — English, Spanish, Catalan
 - ✅ **HACS compatible**
 
 ### Integration Modes vs Card Modes
@@ -37,7 +37,7 @@ The card also supports two manual modes (Helpers and Direct) that don't require 
 
 ## Installation
 
-### HACS (Recommended) â€” Not available yet
+### HACS (Recommended) — Not available yet
 
 1. Open HACS.
 2. Search for **Fanpy** and install it.
@@ -95,7 +95,7 @@ This mode creates `fan.fanpypro_*`, `light.fanpypro_*`, `select.fanpypro_*` enti
 - **Step 4 -- Light**: Toggle whether the fan has a light
 - **Step 5 -- Light Entity** (if has light): Select the existing `light.*` entity
 - **Step 6 -- Light Features** (if has light): Toggle color temperature and brightness controls
-- **Step 7 -- Timer**: Select the number of timers (0â€“3). The card will show that many timer buttons and call native `timer.start`/`timer.cancel` on the timer entities you create manually with the HA timer helper.
+- **Step 7 -- Timer**: Select the number of timers (0-3). The card will show that many timer buttons and call native `timer.start`/`timer.cancel` on the timer entities you create manually with the HA timer helper.
 
 This mode creates only `select.fanpypro_*_velocidad`. The card reads your Shelly entities directly. Use the card in **Fanpy Direct** mode.
 
@@ -203,10 +203,10 @@ Remote button -> ESP32 gateway -> esphome.fanpypro_rf_code event
 Each entity is created with:
 - **Friendly names**: `Fanpy {Name}`, `Fanpy {Name} Luz`, `Fanpy {Name} Velocidad`
 - **Entity IDs**:
-  - `fan.fanpypro_{prefix}` â€” fan power and speed (state: on/off, percentage)
-  - `light.fanpypro_{prefix}_luz` â€” light power (state: on/off)
-  - `select.fanpypro_{prefix}_velocidad` â€” speed selector (options: 1â€“N)
-  - `select.fanpypro_{prefix}_num_timers` â€” number of timer buttons (set via config flow)
+  - `fan.fanpypro_{prefix}` — fan power and speed (state: on/off, percentage)
+  - `light.fanpypro_{prefix}_luz` — light power (state: on/off)
+  - `select.fanpypro_{prefix}_velocidad` — speed selector (options: 1â€“N)
+  - `select.fanpypro_{prefix}_num_timers` — number of timer buttons (set via config flow)
 
 The `fanpypro_` prefix lets the card find related entities automatically.
 
@@ -220,7 +220,7 @@ To change settings after initial setup:
 ## Requirements
 
 - Home Assistant 2025.12.5 or newer
-- [Fanpy Card](https://github.com/figorr/fanpy-card) v3.0.0 or newer (for the Lovelace UI)
+- [Fanpy Card](https://github.com/figorr/fanpy-card) v3.0.2 or newer (for the Lovelace UI)
   - **The card**
 
     ![Fanpy-Card](images/fanpy-card.png)
