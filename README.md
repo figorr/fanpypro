@@ -19,12 +19,12 @@ Fanpy Pro is the **backend companion** for the Fanpy Card. While the card provid
 
 - ✅ **Multi-step setup wizard** — area selection, mode choice, light/features toggles, gateway configuration
 - ✅ **Two integration modes**: Remote (Gateway RF) and Direct (native `switch.*` / `light.*` entities)
-- âœ… **Automatic entity creation** (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
-- âœ… **Automatic entity creation** (Direct): `select.*` only (speed selector + timer count) â€” fan/light entities managed externally
-- âœ… **State persistence** â€” entities restore their last state after HA restart (power, speed, light)
-- âœ… **Timer support** â€” configurable number of timer buttons (0â€“3), exposed via a `select.fanpypro_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
-- âœ… **Multi-language support**: English, Spanish, Catalan
-- âœ… **HACS compatible**
+- ✅ **Automatic entity creation** (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
+- ✅ **Automatic entity creation** (Direct): `select.*` only (speed selector + timer count) â€” fan/light entities managed externally
+- ✅ **State persistence** â€” entities restore their last state after HA restart (power, speed, light)
+- ✅ **Timer support** â€” configurable number of timer buttons (0â€“3), exposed via a `select.fanpypro_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
+- ✅ **Multi-language support**: English, Spanish, Catalan
+- ✅ **HACS compatible**
 
 ### Integration Modes vs Card Modes
 
@@ -33,7 +33,7 @@ Fanpy Pro is the **backend companion** for the Fanpy Card. While the card provid
 | **Fanpy Remote** | Fanpy entities (`fan.fanpypro_*`, `light.fanpypro_*`, `select.fanpypro_*`) + auto-generated ESPHome RF scripts | Creates fan, light, select entities + Resync Luz button | Auto by prefix (`fanpypro_ventilador_{area}_*`) | Calls `fan.turn_on/off`, `fan.set_percentage`, `light.turn_on/off` natively; speed via `fan.set_percentage` |
 | **Fanpy Direct** | Fanpy speed select (`select.fanpypro_*_velocidad`) + user's own `switch.*` / `light.*` (Shelly) | Creates only `select.fanpypro_*_velocidad` | Manual (`entity_fan`, `entity_light`) | Calls `switch.turn_on/off`, `light.turn_on/off` directly; speed via scripts |
 
-The card also supports two manual modes (Helpers and Direct) that don't require the Fanpy integration â€” see the [card documentation](https://github.com/figorr/fanpy-card) for details.
+The card also supports two manual modes (Helpers and Direct) that don't require the Fanpy integration -- see the [card documentation](https://github.com/figorr/fanpy-card) for details.
 
 ## Installation
 
@@ -73,7 +73,9 @@ Install using HACS before the integration is added to the default HACS repositor
 
 ### Fanpy Remote (Gateway RF)
 
-> **Requires**: ESPHome-based RF gateway (ESP32 + CC1101) with the [Daedilus dual-pin wiring](https://esphome.io/projects/daedilus.html) and a matching `gateway_{zone}_codes.yaml` file.
+> **Requires**: ESPHome-based RF gateway (ESP32 + CC1101) with the [Daedilus dual-pin wiring](https://esphome.io/projects/daedilus.html) and a matching `gateway_{zone}_codes.yaml` file. 
+
+> **More info** can be found at [ESPHome project details](https://github.com/figorr/fanpypro/blob/master/esphome/README.md)
 
 - **Step 1 -- Mode**: Select **Remote**
 - **Step 2 -- Area**: Select the area where the fan is located and choose the fan number
@@ -87,13 +89,13 @@ This mode creates `fan.fanpypro_*`, `light.fanpypro_*`, `select.fanpypro_*` enti
 
 ### Fanpy Direct (Shelly switch.* / light.*)
 
-- **Step 1 â€” Mode**: Select **Direct**
-- **Step 2 â€” Area**: Select the area where the fan is located and choose the fan number
-- **Step 3 â€” Fan & Speeds**: Select the existing `switch.*` entity (e.g. your Shelly relay) and set the number of speeds
-- **Step 4 â€” Light**: Toggle whether the fan has a light
-- **Step 5 â€” Light Entity** (if has light): Select the existing `light.*` entity
-- **Step 6 â€” Light Features** (if has light): Toggle color temperature and brightness controls
-- **Step 7 â€” Timer**: Select the number of timers (0â€“3). The card will show that many timer buttons and call native `timer.start`/`timer.cancel` on the timer entities you create manually with the HA timer helper.
+- **Step 1 -- Mode**: Select **Direct**
+- **Step 2 -- Area**: Select the area where the fan is located and choose the fan number
+- **Step 3 -- Fan & Speeds**: Select the existing `switch.*` entity (e.g. your Shelly relay) and set the number of speeds
+- **Step 4 -- Light**: Toggle whether the fan has a light
+- **Step 5 -- Light Entity** (if has light): Select the existing `light.*` entity
+- **Step 6 -- Light Features** (if has light): Toggle color temperature and brightness controls
+- **Step 7 -- Timer**: Select the number of timers (0â€“3). The card will show that many timer buttons and call native `timer.start`/`timer.cancel` on the timer entities you create manually with the HA timer helper.
 
 This mode creates only `select.fanpypro_*_velocidad`. The card reads your Shelly entities directly. Use the card in **Fanpy Direct** mode.
 
