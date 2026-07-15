@@ -46,8 +46,40 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if mode == CONF_MODE_REMOTE and not hass.data[DOMAIN].get("rf_listener_setup"):
         hass.data[DOMAIN]["rf_listener_setup"] = True
+
+        async def _handle_rf_code(event) -> None:
+            device = event.data.get("device", "")
+            code = event.data.get("code", "")
+            if not device or not code:
+                return
+
+            zone = device.replace("gateway-", "", 1) if device.startswith("gateway-") else device
+            cache = hass.data.get(DOMAIN, {}).get("codes_cache", {})
+            zone_codes = cache.get(zone, {})
+
+            for entry in hass.config_entries.async_entries(DOMAIN):
+                if entry.data.get(CONF_GATEWAY_ZONE) != zone:
+                    continue
+                prefix = entry.data.get(CONF_PREFIX)
+                if not prefix:
+                    continue
+                fan_codes = zone_codes.get(prefix, {})
+                matching_commands = _find_commands_by_code(fan_codes, code)
+                if not matching_commands:
+                    continue
+
+                fan_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("fan_entity")
+                if fan_entity:
+                    await fan_entity.async_process_rf_command(matching_commands)
+
+                light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_") or c.startswith("luz_calida") or c.startswith("luz_fria")]
+                if light_cmds:
+                    light_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("light_entity")
+                    if light_entity:
+                        await light_entity.async_process_rf_command(light_cmds)
+
         hass.bus.async_listen("esphome.fanpypro_rf_code", _handle_rf_code)
-        _load_and_cache_codes(hass)
+        await _load_and_cache_codes(hass)
 
     _LOGGER.info("Setup complete for entry %s", entry.entry_id)
     return True
@@ -137,33 +169,46 @@ def _get_wait(command_data, defaults):
     return defaults.get("wait", DEFAULT_GATEWAY_WAIT_MS)
 
 
-def _load_and_cache_codes(hass: HomeAssistant) -> None:
+async def _load_and_cache_codes(hass: HomeAssistant) -> None:
     codes_dir = hass.config.path("custom_components", CODES_DIR)
-    if not os.path.isdir(codes_dir):
-        return
-    cache = {}
-    for fname in os.listdir(codes_dir):
-        if not fname.startswith("gateway_") or not fname.endswith("_codes.yaml"):
-            continue
-        zone = fname[len("gateway_"):-len("_codes.yaml")]
-        path = os.path.join(codes_dir, fname)
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                import yaml
-                cache[zone] = yaml.safe_load(f)
-        except Exception as e:
-            _LOGGER.warning("Failed to load codes for '%s': %s", zone, e)
-    hass.data.setdefault(DOMAIN, {})["codes_cache"] = cache
+
+    def _load():
+        if not os.path.isdir(codes_dir):
+            return None
+        cache = {}
+        for fname in os.listdir(codes_dir):
+            if not fname.startswith("gateway_") or not fname.endswith("_codes.yaml"):
+                continue
+            zone = fname[len("gateway_"):-len("_codes.yaml")]
+            path = os.path.join(codes_dir, fname)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    import yaml
+                    cache[zone] = yaml.safe_load(f)
+            except Exception as e:
+                _LOGGER.warning("Failed to load codes for '%s': %s", zone, e)
+        return cache
+
+    cache = await hass.async_add_executor_job(_load)
+    if cache is not None:
+        hass.data.setdefault(DOMAIN, {})["codes_cache"] = cache
 
 
 def _find_commands_by_code(fan_codes: dict, code: str) -> list[str]:
     matches = []
+    # The event code from ESPHome arrives as decimal; also try binary conversion
+    code_bin = None
+    try:
+        code_bin = bin(int(code))[2:]
+    except (ValueError, TypeError):
+        pass
+
     for cmd_key, cmd_data in fan_codes.items():
         if isinstance(cmd_data, dict):
             rc_code = cmd_data.get("code")
         else:
             continue
-        if rc_code and str(rc_code) == code:
+        if rc_code and (str(rc_code) == code or (code_bin and str(rc_code) == code_bin)):
             matches.append(cmd_key)
     return matches
 
@@ -178,36 +223,7 @@ def _pick_best_command(matching_commands: list[str]) -> str:
     return preferred or matching_commands[0]
 
 
-async def _handle_rf_code(hass: HomeAssistant, event) -> None:
-    device = event.data.get("device", "")
-    code = event.data.get("code", "")
-    if not device or not code:
-        return
 
-    zone = device.replace("gateway-", "", 1) if device.startswith("gateway-") else device
-    cache = hass.data.get(DOMAIN, {}).get("codes_cache", {})
-    zone_codes = cache.get(zone, {})
-
-    for entry in hass.config_entries.async_entries(DOMAIN):
-        if entry.data.get(CONF_GATEWAY_ZONE) != zone:
-            continue
-        prefix = entry.data.get(CONF_PREFIX)
-        if not prefix:
-            continue
-        fan_codes = zone_codes.get(prefix, {})
-        matching_commands = _find_commands_by_code(fan_codes, code)
-        if not matching_commands:
-            continue
-
-        fan_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("fan_entity")
-        if fan_entity:
-            await fan_entity.async_process_rf_command(matching_commands)
-
-        light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_") or c.startswith("luz_calida") or c.startswith("luz_fria")]
-        if light_cmds:
-            light_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("light_entity")
-            if light_entity:
-                await light_entity.async_process_rf_command(light_cmds)
 
 
 async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -322,8 +338,8 @@ def _build_gateway_scripts_yaml(
     for alias, display_name, cmd_key in commands:
         cmd_data = fan_codes.get(cmd_key)
         if cmd_data is None:
-            _LOGGER.warning(
-                "Command '%s' not found for prefix '%s' in gateway '%s'",
+            _LOGGER.info(
+                "Command '%s' not found for prefix '%s' in gateway '%s' — skipping",
                 cmd_key, prefix, zone,
             )
             continue
