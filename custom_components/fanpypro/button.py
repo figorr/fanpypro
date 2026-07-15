@@ -36,7 +36,7 @@ class FanpyProLuzResyncButton(ButtonEntity):
         self._prefix = prefix
         self._attr_name = f"Fanpy Pro {name} Resync Luz"
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_resync_luz"
-        self._attr_icon = "mdi:lightbulb-sync"
+        self._attr_icon = "mdi:sync"
 
     async def async_press(self) -> None:
         light_entity = self._hass.data.get(DOMAIN, {}).get(self._entry.entry_id, {}).get("light_entity")
