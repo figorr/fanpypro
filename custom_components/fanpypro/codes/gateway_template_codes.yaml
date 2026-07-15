@@ -1,0 +1,90 @@
+# =============================================================================
+# Plantilla de códigos RF para un gateway
+# =============================================================================
+# Cómo usarla:
+# 1. Copia este archivo a {config_dir}/custom_components/fanpypro_codes/
+# 2. Renómbralo a gateway_{zona}_codes.yaml (ej: gateway_salon_codes.yaml)
+# 3. Sustituye 'device' por el nombre del dispositivo ESPHome (name: en el YAML)
+# 4. Completa los códigos capturados en los logs de ESPHome
+# =============================================================================
+
+# Nombre del dispositivo ESPHome (name: en el YAML del gateway)
+device: gateway_cambiar
+
+# Valores por defecto para repeat y wait (se aplican a todos los comandos)
+defaults:
+  repeat: 10
+  wait: 0
+
+# =============================================================================
+# Cada ventilador tiene su propia sección con el prefijo como clave.
+# El prefijo se genera automáticamente al configurar la integración:
+#   "ventilador_{area}" o "ventilador_{area}_{numero}"
+# Ejemplos: ventilador_salon, ventilador_pasillo, ventilador_pasillo_2
+# =============================================================================
+
+ventilador_cambiar:
+
+  # --- Power ---
+  on:
+    code: '11011101011010000001111001000'
+    protocol: 1
+  off:
+    code: '11011101011010000001110010001'
+    protocol: 1
+
+  # --- Luz (opcional) ---
+  luz_on:
+    code: '11011101011010000001100110011'
+    protocol: 1
+  luz_off:
+    code: '11011101011010000001100110011'
+    protocol: 1
+
+  # --- Temperatura de color (opcional) ---
+  luz_calida:
+    code: '11011101011010000001100001011'
+    protocol: 1
+  luz_fria:
+    code: '11011101011010000001100101011'
+    protocol: 1
+
+  # --- Intensidad de luz (opcional) ---
+  intensidad_alta:
+    code: '11011101011010000001011001100'
+    protocol: 1
+  intensidad_baja:
+    code: '11011101011010000001010001101'
+    protocol: 1
+
+  # --- Velocidades (tantas como tenga el ventilador, de 1 a 10) ---
+  velocidad1:
+    code: '11011101011010000001111101000'
+    protocol: 1
+  velocidad2:
+    code: '11011101011010000001111001000'
+    protocol: 1
+  velocidad3:
+    code: '11011101011010000001110101001'
+    protocol: 1
+  velocidad4:
+    code: '11011101011010000001110001001'
+    protocol: 1
+  velocidad5:
+    code: '11011101011010000001101101010'
+    protocol: 1
+  velocidad6:
+    code: '11011101011010000001101001010'
+    protocol: 1
+
+  # --- Alternativa: usar códigos raw (array de pulsos) ---
+  # on:
+  #   raw: [560, -620, 280, -310, 1200, -1300, ...]
+  #   repeat: 10
+  #   wait: 4733
+
+  # --- Ejemplo de comando con valores distintos al default ---
+  # velocidad1:
+  #   raw: [560, -620, ...]
+  #   repeat: 5
+  #   wait: 2000

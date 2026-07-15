@@ -1,0 +1,9 @@
+﻿.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+tmp.json
+
+# Generated files (user-specific)
+fanpypro/generated/

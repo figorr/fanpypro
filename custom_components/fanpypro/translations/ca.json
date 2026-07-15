@@ -1,0 +1,103 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fanpy Pro — Mode",
+        "description": "Tria com es controla aquest ventilador.",
+        "data": {
+          "mode": "Mode de control"
+        }
+      },
+      "area": {
+        "title": "Fanpy Pro — \u00c0rea",
+        "description": "Selecciona l'\u00e0rea on est\u00e0 el ventilador. El nom i prefix es generaran autom\u00e0ticament. Si l'\u00e0rea no existeix, crea-la a Configuraci\u00f3 > \u00c0rees i reinicia l'assistent.",
+        "data": {
+          "area": "\u00c0rea",
+          "fan_number": "N\u00famero de ventilador (1 = primer ventilador, 2 = segon, ...)"
+        }
+      },
+      "direct_entity": {
+        "title": "Fanpy Pro — Ventilador i Velocitats",
+        "description": "Selecciona l'entitat switch que controla aquest ventilador i estableix el nombre de velocitats.",
+        "data": {
+          "entity_fan": "Entitat ventilador (switch.*)",
+          "num_speeds": "Nombre de velocitats"
+        }
+      },
+      "direct_light": {
+        "title": "Fanpy Pro — Llum",
+        "description": "Aquest ventilador té llum?",
+        "data": {
+          "has_light": "Té llum"
+        }
+      },
+      "direct_light_entity": {
+        "title": "Fanpy Pro — Entitat de Llum",
+        "description": "Selecciona l'entitat light que controla la llum del ventilador.",
+        "data": {
+          "entity_light": "Entitat llum (light.*)"
+        }
+      },
+      "direct_light_features": {
+        "title": "Fanpy Pro — Funcions de Llum",
+        "description": "Configura les capacitats de la llum del ventilador.",
+        "data": {
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control d'intensitat"
+        }
+      },
+      "helpers_speeds": {
+        "title": "Fanpy Pro — Velocitats",
+        "description": "Estableix el nombre de velocitats d'aquest ventilador.",
+        "data": {
+          "num_speeds": "Nombre de velocitats"
+        }
+      },
+      "helpers_light": {
+        "title": "Fanpy Pro — Llum",
+        "description": "Aquest ventilador t\u00e9 llum?",
+        "data": {
+          "has_light": "T\u00e9 llum"
+        }
+      },
+      "helpers_light_features": {
+        "title": "Fanpy Pro — Funcions de Llum",
+        "description": "Configura les capacitats de la llum del ventilador.",
+        "data": {
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control d'intensitat"
+        }
+      },
+      "helpers_timer": {
+        "title": "Fanpy Pro — Temporitzador",
+        "description": "Selecciona el nombre de temporitzadors. Els temporitzadors s'han de crear manualment utilitzant l'\"Ajudant\" de temporitzador de Home Assistant ('Configuraci\u00f3' > 'Ajudants' > 'Temporitzador'). La targeta mostrar\u00e0 aquesta quantitat de botons de temporitzador.",
+        "data": {
+          "num_timers": "Nombre de temporitzadors"
+        }
+      },
+      "helpers_timer_direct": {
+        "title": "Fanpy Pro — Temporitzador",
+        "description": "Selecciona el nombre de temporitzadors. Els temporitzadors s'han de crear manualment utilitzant l'\"Ajudant\" de temporitzador de Home Assistant ('Configuraci\u00f3' > 'Ajudants' > 'Temporitzador'). La targeta mostrar\u00e0 aquesta quantitat de botons de temporitzador.",
+        "data": {
+          "num_timers": "Nombre de temporitzadors"
+        }
+      },
+      "helpers_gateway": {
+        "title": "Fanpy Pro — Gateway RF",
+        "description": "Selecciona el gateway ESP32 que controla aquest ventilador. Els gateways disponibles es detecten dels fitxers YAML a fanpypro_codes/.",
+        "data": {
+          "gateway_zone": "Gateway"
+        }
+      }
+    },
+    "error": {
+      "unknown": "Error inesperat",
+      "invalid_area": "Selecciona una \u00e0rea v\u00e0lida",
+      "invalid_entity": "Selecciona una entitat v\u00e0lida",
+      "invalid_speeds": "El nombre de velocitats ha d'estar entre 1 i 10"
+    },
+    "abort": {
+      "already_configured": "Aquesta \u00e0rea ja est\u00e0 configurada"
+    }
+  }
+}

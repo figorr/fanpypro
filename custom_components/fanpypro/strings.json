@@ -1,0 +1,103 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fanpy Pro — Mode",
+        "description": "Choose how this fan is controlled.",
+        "data": {
+          "mode": "Control mode"
+        }
+      },
+      "area": {
+        "title": "Fanpy Pro — Area",
+        "description": "Select the area where the fan is located. The name and prefix will be auto-generated. If the area doesn't exist, create it in Settings > Areas and restart the wizard.",
+        "data": {
+          "area": "Area",
+          "fan_number": "Fan number (1 = first fan in this area, 2 = second, ...)"
+        }
+      },
+      "direct_entity": {
+        "title": "Fanpy Pro — Fan & Speeds",
+        "description": "Select the switch entity that controls this fan and set the number of speeds.",
+        "data": {
+          "entity_fan": "Fan entity (switch.*)",
+          "num_speeds": "Number of speeds"
+        }
+      },
+      "direct_light": {
+        "title": "Fanpy Pro — Light",
+        "description": "Does this fan have a light?",
+        "data": {
+          "has_light": "Has light"
+        }
+      },
+      "direct_light_entity": {
+        "title": "Fanpy Pro — Light Entity",
+        "description": "Select the light entity that controls this fan's light.",
+        "data": {
+          "entity_light": "Light entity (light.*)"
+        }
+      },
+      "direct_light_features": {
+        "title": "Fanpy Pro — Light Features",
+        "description": "Configure the fan light capabilities.",
+        "data": {
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      },
+      "helpers_speeds": {
+        "title": "Fanpy Pro — Speeds",
+        "description": "Set the number of speeds this fan has.",
+        "data": {
+          "num_speeds": "Number of speeds"
+        }
+      },
+      "helpers_light": {
+        "title": "Fanpy Pro — Light",
+        "description": "Does this fan have a light?",
+        "data": {
+          "has_light": "Has light"
+        }
+      },
+      "helpers_light_features": {
+        "title": "Fanpy Pro — Light Features",
+        "description": "Configure the fan light capabilities.",
+        "data": {
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      },
+      "helpers_timer": {
+        "title": "Fanpy Pro — Timer",
+        "description": "Select the number of timers. Timers must be created manually using Home Assistant's timer helper ('Settings' > 'Helpers' > 'Timer'). The card will show this many timer buttons.",
+        "data": {
+          "num_timers": "Number of timers"
+        }
+      },
+      "helpers_timer_direct": {
+        "title": "Fanpy Pro — Timer",
+        "description": "Select the number of timers. Timers must be created manually using Home Assistant's timer helper ('Settings' > 'Helpers' > 'Timer'). The card will show this many timer buttons.",
+        "data": {
+          "num_timers": "Number of timers"
+        }
+      },
+      "helpers_gateway": {
+        "title": "Fanpy Pro — RF Gateway",
+        "description": "Select the ESP32 gateway that controls this fan. The available gateways are detected from the YAML files in fanpypro_codes/.",
+        "data": {
+          "gateway_zone": "Gateway"
+        }
+      }
+    },
+    "error": {
+      "unknown": "Unexpected error",
+      "invalid_area": "Please select a valid area",
+      "invalid_entity": "Please select a valid entity",
+      "invalid_speeds": "Number of speeds must be between 1 and 10"
+    },
+    "abort": {
+      "already_configured": "This area is already configured"
+    }
+  }
+}

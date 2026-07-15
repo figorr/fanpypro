@@ -1,0 +1,64 @@
+﻿name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git author
+        run: |
+          git config user.name "semantic-release-bot"
+          git config user.email "jdcuartero@yahoo.es"
+
+      - name: Run semantic-release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      - name: Get release tag
+        id: tag
+        run: |
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "Latest tag: $tag"
+
+      - name: Create fanpypro.zip
+        if: steps.tag.outputs.tag != ''
+        run: |
+          cd custom_components/fanpypro
+          zip -r "$GITHUB_WORKSPACE/fanpypro.zip" ./
+          echo "Zip created at $GITHUB_WORKSPACE/fanpypro.zip"
+
+      - name: Upload fanpypro.zip to release
+        if: steps.tag.outputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          files: fanpypro.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

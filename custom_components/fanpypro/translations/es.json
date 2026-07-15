@@ -1,0 +1,103 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fanpy Pro — Modo",
+        "description": "Elige c\u00f3mo se controla este ventilador.",
+        "data": {
+          "mode": "Modo de control"
+        }
+      },
+      "area": {
+        "title": "Fanpy Pro — \u00c1rea",
+        "description": "Selecciona el \u00e1rea donde est\u00e1 el ventilador. El nombre y prefijo se generar\u00e1n autom\u00e1ticamente. Si el \u00e1rea no existe, cr\u00e9ala en Configuraci\u00f3n > \u00c1reas y reinicia el asistente.",
+        "data": {
+          "area": "\u00c1rea",
+          "fan_number": "N\u00famero de ventilador (1 = primer ventilador, 2 = segundo, ...)"
+        }
+      },
+      "direct_entity": {
+        "title": "Fanpy Pro — Ventilador y Velocidades",
+        "description": "Selecciona la entidad switch que controla este ventilador y establece el n\u00famero de velocidades.",
+        "data": {
+          "entity_fan": "Entidad ventilador (switch.*)",
+          "num_speeds": "N\u00famero de velocidades"
+        }
+      },
+      "direct_light": {
+        "title": "Fanpy Pro — Luz",
+        "description": "Este ventilador tiene luz?",
+        "data": {
+          "has_light": "Tiene luz"
+        }
+      },
+      "direct_light_entity": {
+        "title": "Fanpy Pro — Entidad de Luz",
+        "description": "Selecciona la entidad light que controla la luz del ventilador.",
+        "data": {
+          "entity_light": "Entidad luz (light.*)"
+        }
+      },
+      "direct_light_features": {
+        "title": "Fanpy Pro — Funciones de Luz",
+        "description": "Configura las capacidades de la luz del ventilador.",
+        "data": {
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control de intensidad"
+        }
+      },
+      "helpers_speeds": {
+        "title": "Fanpy Pro — Velocidades",
+        "description": "Establece el n\u00famero de velocidades de este ventilador.",
+        "data": {
+          "num_speeds": "N\u00famero de velocidades"
+        }
+      },
+      "helpers_light": {
+        "title": "Fanpy Pro — Luz",
+        "description": "Este ventilador tiene luz?",
+        "data": {
+          "has_light": "Tiene luz"
+        }
+      },
+      "helpers_light_features": {
+        "title": "Fanpy Pro — Funciones de Luz",
+        "description": "Configura las capacidades de la luz del ventilador.",
+        "data": {
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control de intensidad"
+        }
+      },
+      "helpers_timer": {
+        "title": "Fanpy Pro — Temporizador",
+        "description": "Selecciona el n\u00famero de temporizadores. Los temporizadores deben crearse manualmente utilizando el 'Ayudante' de temporizador de Home Assistant ('Configuraci\u00f3n' > 'Ayudantes' > 'Temporizador'). La tarjeta mostrar\u00e1 esta cantidad de botones de temporizador.",
+        "data": {
+          "num_timers": "N\u00famero de temporizadores"
+        }
+      },
+      "helpers_timer_direct": {
+        "title": "Fanpy Pro — Temporizador",
+        "description": "Selecciona el n\u00famero de temporizadores. Los temporizadores deben crearse manualmente utilizando el 'Ayudante' de temporizador de Home Assistant ('Configuraci\u00f3n' > 'Ayudantes' > 'Temporizador'). La tarjeta mostrar\u00e1 esta cantidad de botones de temporizador.",
+        "data": {
+          "num_timers": "N\u00famero de temporizadores"
+        }
+      },
+      "helpers_gateway": {
+        "title": "Fanpy Pro — Gateway RF",
+        "description": "Selecciona el gateway ESP32 que controla este ventilador. Los gateways disponibles se detectan de los archivos YAML en fanpypro_codes/.",
+        "data": {
+          "gateway_zone": "Gateway"
+        }
+      }
+    },
+    "error": {
+      "unknown": "Error inesperado",
+      "invalid_area": "Selecciona un \u00e1rea v\u00e1lida",
+      "invalid_entity": "Selecciona una entidad v\u00e1lida",
+      "invalid_speeds": "El n\u00famero de velocidades debe estar entre 1 y 10"
+    },
+    "abort": {
+      "already_configured": "Esta \u00e1rea ya est\u00e1 configurada"
+    }
+  }
+}

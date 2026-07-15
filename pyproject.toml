@@ -1,0 +1,23 @@
+﻿[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "fanpy"
+version = "3.0.3"
+description = "Custom Home Assistant integration for ceiling fan configuration"
+authors = [
+    { name = "figorr", email = "jdcuartero@yahoo.es" }
+]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+requires-python = ">=3.12"
+keywords = ["home-assistant", "homeassistant", "fan", "broadlink", "hacs"]
+
+[tool.semantic_release]
+branch = "master"
+version_source = "tag"
+version_variable = "custom_components/fanpypro/version.py:__version__"
+changelog = { file = "CHANGELOG.md" }
+upload_to_pypi = false
+ci = false

@@ -1,0 +1,49 @@
+device: gateway-salon
+
+defaults:
+  repeat: 10
+  wait: 0
+
+ventilador_salon:
+  on:
+    code: '11011101011010000001111001000'
+    protocol: 1
+  off:
+    code: '11011101011010000001110010001'
+    protocol: 1
+  luz_on:
+    code: '11011101011010000001100110011'
+    protocol: 1
+  luz_off:
+    code: '11011101011010000001100110011'
+    protocol: 1
+  luz_calida:
+    code: '11011101011010000001100001011'
+    protocol: 1
+  luz_fria:
+    code: '11011101011010000001100101011'
+    protocol: 1
+  intensidad_alta:
+    code: '11011101011010000001011001100'
+    protocol: 1
+  intensidad_baja:
+    code: '11011101011010000001010001101'
+    protocol: 1
+  velocidad1:
+    code: '11011101011010000001111101000'
+    protocol: 1
+  velocidad2:
+    code: '11011101011010000001111001000'
+    protocol: 1
+  velocidad3:
+    code: '11011101011010000001110101001'
+    protocol: 1
+  velocidad4:
+    code: '11011101011010000001110001001'
+    protocol: 1
+  velocidad5:
+    code: '11011101011010000001101101010'
+    protocol: 1
+  velocidad6:
+    code: '11011101011010000001101001010'
+    protocol: 1
