@@ -24,7 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    await _generate_scripts_yaml(hass, entry)
+    await _generate_scripts_yaml(hass)
 
     mode = entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
     if mode == CONF_MODE_DIRECT:
@@ -48,37 +48,41 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN]["rf_listener_setup"] = True
 
         async def _handle_rf_code(event) -> None:
-            device = event.data.get("device", "")
-            code = event.data.get("code", "")
-            if not device or not code:
-                return
+            try:
+                device = event.data.get("device", "")
+                code = event.data.get("code", "")
+                if not device or not code:
+                    return
 
-            zone = device.replace("gateway-", "", 1) if device.startswith("gateway-") else device
-            cache = hass.data.get(DOMAIN, {}).get("codes_cache", {})
-            zone_codes = cache.get(zone, {})
+                zone = device.replace("gateway-", "", 1) if device.startswith("gateway-") else device
+                cache = hass.data.get(DOMAIN, {}).get("codes_cache", {})
+                zone_codes = cache.get(zone, {})
 
-            for entry in hass.config_entries.async_entries(DOMAIN):
-                if entry.data.get(CONF_GATEWAY_ZONE) != zone:
-                    continue
-                prefix = entry.data.get(CONF_PREFIX)
-                if not prefix:
-                    continue
-                fan_codes = zone_codes.get(prefix, {})
-                matching_commands = _find_commands_by_code(fan_codes, code)
-                if not matching_commands:
-                    continue
+                for entry in hass.config_entries.async_entries(DOMAIN):
+                    if entry.data.get(CONF_GATEWAY_ZONE) != zone:
+                        continue
+                    prefix = entry.data.get(CONF_PREFIX)
+                    if not prefix:
+                        continue
+                    fan_codes = zone_codes.get(prefix, {})
+                    matching_commands = _find_commands_by_code(fan_codes, code)
+                    _LOGGER.info("RF event: code=%s zone=%s prefix=%s matches=%s", code, zone, prefix, matching_commands)
+                    if not matching_commands:
+                        continue
 
-                fan_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("fan_entity")
-                if fan_entity:
-                    await fan_entity.async_process_rf_command(matching_commands)
+                    fan_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("fan_entity")
+                    if fan_entity:
+                        await fan_entity.async_process_rf_command(matching_commands)
 
-                light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_") or c.startswith("luz_calida") or c.startswith("luz_fria")]
-                if light_cmds:
-                    light_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("light_entity")
-                    if light_entity:
-                        await light_entity.async_process_rf_command(light_cmds)
+                    light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_") or c.startswith("luz_calida") or c.startswith("luz_fria")]
+                    if light_cmds:
+                        light_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("light_entity")
+                        if light_entity:
+                            await light_entity.async_process_rf_command(light_cmds)
+            except Exception as e:
+                _LOGGER.warning("Error processing RF event: %s", e)
 
-        hass.bus.async_listen("esphome.fanpypro_rf_code", _handle_rf_code)
+        hass.data[DOMAIN]["rf_listener"] = hass.bus.async_listen("esphome.fanpypro_rf_code", _handle_rf_code)
         await _load_and_cache_codes(hass)
 
     _LOGGER.info("Setup complete for entry %s", entry.entry_id)
@@ -86,6 +90,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    mode = entry.data.get(CONF_MODE, CONF_MODE_REMOTE)
+
+    if mode == CONF_MODE_REMOTE:
+        remaining_remote = [
+            e for e in hass.config_entries.async_entries(DOMAIN)
+            if e.entry_id != entry.entry_id
+            and e.data.get(CONF_MODE, CONF_MODE_REMOTE) == CONF_MODE_REMOTE
+        ]
+        if not remaining_remote:
+            remove_listener_rf = hass.data[DOMAIN].pop("rf_listener", None)
+            if remove_listener_rf:
+                remove_listener_rf()
+            hass.data[DOMAIN].pop("rf_listener_setup", None)
+
     remove_listener = hass.data[DOMAIN].get(entry.entry_id, {}).get("timer_listener")
     if remove_listener:
         remove_listener()
@@ -204,6 +222,9 @@ def _find_commands_by_code(fan_codes: dict, code: str) -> list[str]:
         pass
 
     for cmd_key, cmd_data in fan_codes.items():
+        if isinstance(cmd_key, bool):
+            cmd_key = "on" if cmd_key else "off"
+        cmd_key = str(cmd_key)
         if isinstance(cmd_data, dict):
             rc_code = cmd_data.get("code")
         else:
@@ -213,20 +234,7 @@ def _find_commands_by_code(fan_codes: dict, code: str) -> list[str]:
     return matches
 
 
-def _pick_best_command(matching_commands: list[str]) -> str:
-    preferred = None
-    for c in matching_commands:
-        if c.startswith("velocidad"):
-            return c
-        if c in ("power_on", "power_off", "luz_on", "luz_off"):
-            preferred = c
-    return preferred or matching_commands[0]
-
-
-
-
-
-async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def _generate_scripts_yaml(hass: HomeAssistant) -> None:
     integration_dir = os.path.dirname(__file__)
     output_dir = os.path.join(integration_dir, "generated")
     os.makedirs(output_dir, exist_ok=True)
@@ -267,7 +275,7 @@ async def _generate_scripts_yaml(hass: HomeAssistant, entry: ConfigEntry) -> Non
 
     await hass.async_add_executor_job(_write)
 
-    _LOGGER.info("Fanpy Pro: regenerated scripts.yaml for all entries")
+    _LOGGER.info("FanpyPro: regenerated scripts.yaml for all entries")
 
 
 def _build_gateway_scripts_yaml(
@@ -344,29 +352,45 @@ def _build_gateway_scripts_yaml(
             )
             continue
 
-        repeat = _get_repeat(cmd_data, defaults)
-        rc_code = _get_rc_code(cmd_data)
-        raw = _get_raw_code(cmd_data)
-
-        lines.append(f"{prefix}_{alias}:")
-        lines.append("  sequence:")
-
-        if rc_code:
-            protocol = _get_rc_protocol(cmd_data)
-            lines.append(f"  - action: esphome.{device_service}_transmit_rc_switch")
-            lines.append("    data:")
-            lines.append(f"      code: '{rc_code}'")
-            lines.append(f"      repeat_times: {repeat}")
-        else:
-            wait = _get_wait(cmd_data, defaults)
-            lines.append(f"  - action: esphome.{device_service}_transmit_raw")
-            lines.append("    data:")
-            lines.append(f"      raw_code: {raw}")
-            lines.append(f"      repeat_times: {repeat}")
-            lines.append(f"      wait_time_ms: {wait}")
-
-        lines.append(f"  alias: \"{display_name}\"")
-        lines.append("  description: ''")
-        lines.append("")
+        block = _generate_command_block(
+            prefix, alias, display_name, cmd_key, cmd_data, defaults, device_service
+        )
+        if block:
+            lines.append(block)
 
     return "\n".join(lines)
+
+
+def _generate_command_block(
+    prefix: str, alias: str, display_name: str, cmd_key: str,
+    cmd_data: dict, defaults: dict, device_service: str
+) -> str | None:
+    repeat = _get_repeat(cmd_data, defaults)
+    rc_code = _get_rc_code(cmd_data)
+    raw = _get_raw_code(cmd_data)
+
+    block = [f"{prefix}_{alias}:", "  sequence:"]
+
+    if rc_code:
+        protocol = _get_rc_protocol(cmd_data)
+        block.append(f"  - action: esphome.{device_service}_transmit_rc_switch")
+        block.append("    data:")
+        block.append(f"      code: '{rc_code}'")
+        block.append(f"      repeat_times: {repeat}")
+        block.append(f"      protocol: {protocol}")
+    elif raw:
+        wait = _get_wait(cmd_data, defaults)
+        block.append(f"  - action: esphome.{device_service}_transmit_raw")
+        block.append("    data:")
+        block.append(f"      raw_code: {raw}")
+        block.append(f"      repeat_times: {repeat}")
+        block.append(f"      wait_time_ms: {wait}")
+    else:
+        _LOGGER.info("No code or raw for '%s' — skipping", cmd_key)
+        return None
+
+    block.append(f'  alias: "{display_name}"')
+    block.append("  description: ''")
+    block.append("")
+
+    return "\n".join(block)
