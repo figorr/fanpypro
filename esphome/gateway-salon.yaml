@@ -15,9 +15,9 @@ esphome:
   on_boot:
     priority: 0
     then:
-      - logger.log: "Iniciando CC1101 en modo RX..."
+      - lambda: 'ESP_LOGI("cc1101", "Iniciando CC1101 en modo RX...");'
       - cc1101.begin_rx
-      - logger.log: "CC1101 en modo RX - esperando señales"
+      - lambda: 'ESP_LOGI("cc1101", "CC1101 en modo RX - esperando señales");'
 
 esp32:
   board: esp32dev
@@ -46,13 +46,13 @@ api:
       variables:
         code: string
         repeat_times: int
+        protocol: int
       then:
-        - logger.log:
-            format: "Transmit RCSwitch: code=%s repeat=%d"
-            args: [code, repeat_times]
+        - lambda: |-
+            ESP_LOGD("main", "Transmit RCSwitch: code=%s repeat=%d", code.c_str(), (int)repeat_times);
         - remote_transmitter.transmit_rc_switch_raw:
             code: !lambda return code;
-            protocol: 1
+            protocol: !lambda return esphome::remote_base::RC_SWITCH_PROTOCOLS[(uint8_t)protocol];
             repeat:
               times: !lambda return repeat_times;
               wait_time: 0s
@@ -103,7 +103,7 @@ remote_receiver:
           data:
             device: ${device_name}
             code: !lambda return x.code;
-            protocol: "1"
+            protocol: !lambda return (int)x.protocol;
 
 remote_transmitter:
   pin: GPIO26
