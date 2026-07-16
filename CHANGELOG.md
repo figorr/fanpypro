@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/figorr/fanpypro/compare/v1.0.2...v1.0.3) (2026-07-16)
+
+
+### Bug Fixes
+
+* fix light on / off not booleans ([af26826](https://github.com/figorr/fanpypro/commit/af26826073c74963514c8018fc2cfde717c09e65))
+* fix light toggle when on / off share the same code ([30eeaf3](https://github.com/figorr/fanpypro/commit/30eeaf3bb4e6b9e130a05b51af279b5fe8a0ab6a))
+
 ## [1.0.2](https://github.com/figorr/fanpypro/compare/v1.0.1...v1.0.2) (2026-07-16)
 
 
