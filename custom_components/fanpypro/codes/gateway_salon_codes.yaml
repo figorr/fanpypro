@@ -5,10 +5,10 @@ defaults:
   wait: 0
 
 ventilador_salon:
-  on:
+  "on":
     code: '11011101011010000001111001000'
     protocol: 1
-  off:
+  "off":
     code: '11011101011010000001110010001'
     protocol: 1
   luz_on:

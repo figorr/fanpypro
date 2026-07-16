@@ -17,8 +17,8 @@ defaults:
   wait: 4733
 
 ventilador_salon:
-  on: [560, -620, 280, -310, ...]
-  off: [580, -640, ...]
+  "on": [560, -620, 280, -310, ...]
+  "off": [580, -640, ...]
   luz_on: [490, -500, ...]
   luz_off: [490, -500, ...]
   luz_calida: [...]
@@ -41,11 +41,11 @@ Si un comando necesita `repeat` o `wait` diferente al default:
 
 ```yaml
 ventilador_salon:
-  on:
+  "on":
     raw: [560, -620, ...]
     repeat: 5
     wait: 2000
-  off: [580, -640, ...]
+  "off": [580, -640, ...]
 ```
 
 ## Archivos esperados
