@@ -56,13 +56,16 @@ class FanpyProLightEntity(LightEntity, RestoreEntity):
             if time.monotonic() - self._last_tx_time < 2.0:
                 _LOGGER.debug("Suppressed RF echo (%.1fs since last TX)", time.monotonic() - self._last_tx_time)
                 return
+            if "luz_on" in matching_commands and "luz_off" in matching_commands:
+                self._attr_is_on = not self._attr_is_on
+                self.async_write_ha_state()
+                _LOGGER.debug("Light toggled from RF: is_on=%s", self._attr_is_on)
+                return
             for c in matching_commands:
                 if c == "luz_on":
                     self._attr_is_on = True
                 elif c == "luz_off":
                     self._attr_is_on = False
-                elif c.startswith("luz_"):
-                    self._attr_is_on = not self._attr_is_on
                 else:
                     continue
                 self.async_write_ha_state()
