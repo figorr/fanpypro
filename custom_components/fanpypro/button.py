@@ -31,15 +31,14 @@ async def async_setup_entry(
 class FanpyProLuzResyncButton(ButtonEntity):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, prefix: str, name: str) -> None:
-        self._hass = hass
         self._entry = entry
         self._prefix = prefix
-        self._attr_name = f"Fanpy Pro {name} Resync Luz"
+        self._attr_name = f"FanpyPro {name} Resync Luz"
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_resync_luz"
         self._attr_icon = "mdi:sync"
 
     async def async_press(self) -> None:
-        light_entity = self._hass.data.get(DOMAIN, {}).get(self._entry.entry_id, {}).get("light_entity")
+        light_entity = self.hass.data.get(DOMAIN, {}).get(self._entry.entry_id, {}).get("light_entity")
         if light_entity:
             await light_entity.async_process_rf_command(["luz_on"])
             _LOGGER.info("Luz resync button pressed for %s", self._prefix)
