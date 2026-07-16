@@ -28,6 +28,7 @@ def _build_schemas(
     entry_data: Optional[Dict[str, Any]] = None,
     step: str = "user",
     num_speeds: int = 6,
+    gateways: Optional[list[dict]] = None,
 ):
     data = entry_data or {}
 
@@ -115,7 +116,7 @@ def _build_schemas(
         })
 
     if step == "helpers_gateway":
-        gateways = _scan_gateways(hass)
+        gateways = gateways or _scan_gateways(hass)
         if not gateways:
             gateways = [{"value": "", "label": "No gateways found. Create gateway files in fanpypro_codes/"}]
         default_zone = data.get(CONF_GATEWAY_ZONE, gateways[0]["value"] if gateways else "")
@@ -286,7 +287,8 @@ class FanpyProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data=self._data,
             )
 
-        schema = _build_schemas(self.hass, self._data, step="helpers_gateway")
+        gateways = await self.hass.async_add_executor_job(_scan_gateways, self.hass)
+        schema = _build_schemas(self.hass, self._data, step="helpers_gateway", gateways=gateways)
         return self.async_show_form(step_id="helpers_gateway", data_schema=schema)
 
 
