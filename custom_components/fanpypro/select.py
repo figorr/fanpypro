@@ -4,6 +4,7 @@ from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import *
 
@@ -30,7 +31,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class FanSpeedSelect(SelectEntity):
+class FanSpeedSelect(SelectEntity, RestoreEntity):
 
     _attr_icon = "mdi:format-list-bulleted"
 
@@ -42,6 +43,18 @@ class FanSpeedSelect(SelectEntity):
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_velocidad"
         self._attr_options = [str(i) for i in range(1, num_speeds + 1)]
         self._attr_current_option = self._attr_options[0]
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last_state = await self.async_get_last_state()
+        if last_state is not None and last_state.state not in ("unknown", "unavailable"):
+            try:
+                level = int(last_state.state)
+                if 1 <= level <= self._num_speeds:
+                    self._attr_current_option = str(level)
+            except (ValueError, TypeError):
+                pass
+        self.async_write_ha_state()
 
     @property
     def extra_state_attributes(self):

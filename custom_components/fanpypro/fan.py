@@ -100,6 +100,8 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
             try:
                 level = int(new_state.state)
                 percentage = self._percentage_for_level(level)
+                if percentage == self._attr_percentage:
+                    return
                 self._attr_percentage = percentage
                 self._last_percentage = percentage
                 self.async_write_ha_state()
