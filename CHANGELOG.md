@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/figorr/fanpypro/compare/v1.0.3...v1.1.0) (2026-07-17)
+
+
+### Features
+
+* include hybrid rf+broadlink mode ([4b4d756](https://github.com/figorr/fanpypro/commit/4b4d7562e024b44f45eeb9480fca200abdcfe114))
+
 ## [1.0.3](https://github.com/figorr/fanpypro/compare/v1.0.2...v1.0.3) (2026-07-16)
 
 
