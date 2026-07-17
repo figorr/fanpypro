@@ -243,6 +243,17 @@ async def _generate_scripts_yaml(hass: HomeAssistant) -> None:
     entries = hass.config_entries.async_entries(DOMAIN)
     codes_dir = hass.config.path("custom_components", CODES_DIR)
 
+    resolved_device_ids = {}
+    for e in entries:
+        d = e.data
+        if d.get(CONF_MODE, CONF_MODE_REMOTE) == CONF_MODE_REMOTE and d.get(CONF_USE_BROADLINK, False):
+            entity_id = d.get(CONF_BROADLINK_DEVICE_ID, "")
+            if entity_id:
+                ent_reg = hass.data['entity_registry']
+                entry_er = ent_reg.async_get(entity_id)
+                if entry_er and entry_er.device_id:
+                    resolved_device_ids[e.entry_id] = entry_er.device_id
+
     def _write():
         blocks = []
         for e in entries:
@@ -252,13 +263,16 @@ async def _generate_scripts_yaml(hass: HomeAssistant) -> None:
             n = d.get(CONF_NAME, p)
 
             if mode == CONF_MODE_REMOTE:
-                gateway_zone = d.get(CONF_GATEWAY_ZONE)
-                if gateway_zone:
-                    block = _build_gateway_scripts_yaml(
-                        codes_dir, p, n, d
-                    )
+                use_broadlink = d.get(CONF_USE_BROADLINK, False)
+                if use_broadlink:
+                    resolved_dev_id = resolved_device_ids.get(e.entry_id)
+                    block = _build_broadlink_scripts_yaml(p, n, d, resolved_dev_id)
                 else:
-                    block = ""
+                    gateway_zone = d.get(CONF_GATEWAY_ZONE)
+                    if gateway_zone:
+                        block = _build_gateway_scripts_yaml(codes_dir, p, n, d)
+                    else:
+                        block = ""
             else:
                 block = ""
 
@@ -394,3 +408,77 @@ def _generate_command_block(
     block.append("")
 
     return "\n".join(block)
+
+
+def _build_broadlink_scripts_yaml(
+    prefix: str, name: str, data: dict, resolved_device_id: str | None = None,
+) -> str:
+    ns = int(data.get(CONF_NUM_SPEEDS, 6))
+    has_light = data.get(CONF_HAS_LIGHT, False)
+    has_temp = data.get(CONF_HAS_LIGHT_TEMPERATURE, False)
+    has_intensity = data.get(CONF_HAS_LIGHT_INTENSITY, False)
+
+    bd_id = data.get(CONF_BROADLINK_DEVICE_ID, "")
+    rd = data.get(CONF_REMOTE_DEVICE, prefix)
+
+    cmd_on = data.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)
+    cmd_off = data.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)
+    cmd_luz_on = data.get(CONF_COMMAND_LUZ_ON, DEFAULT_COMMAND_LUZ_ON)
+    cmd_luz_off = data.get(CONF_COMMAND_LUZ_OFF, DEFAULT_COMMAND_LUZ_OFF)
+    cmd_luz_calida = data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)
+    cmd_luz_fria = data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)
+    cmd_int_alta = data.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)
+    cmd_int_baja = data.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)
+
+    def _target_block():
+        if resolved_device_id:
+            return f"      device_id: {resolved_device_id}"
+        if bd_id:
+            return f"      entity_id: {bd_id}"
+        return "      entity_id: YOUR_BROADLINK_ENTITY_ID"
+
+    def _append_script(action_name, display_name, command):
+        lines.append(f"{prefix}_{action_name}:")
+        lines.append("  sequence:")
+        lines.append("  - action: remote.send_command")
+        lines.append("    metadata: {}")
+        lines.append("    data:")
+        lines.append("      num_repeats: 1")
+        lines.append("      delay_secs: 0.4")
+        lines.append("      hold_secs: 0")
+        lines.append(f"      device: {rd}")
+        lines.append(f"      command: '{command}'")
+        lines.append("    target:")
+        lines.append(_target_block())
+        lines.append(f"  alias: \"{display_name}\"")
+        lines.append("  description: ''")
+        lines.append("")
+
+    lines = []
+    lines.append(f"# Prefix: {prefix}")
+    lines.append(f"# Name: {name}")
+    lines.append(f"# Device ID: {bd_id}")
+    lines.append("")
+
+    _append_script("power_on", f"{name} Power ON", cmd_on)
+    _append_script("power_off", f"{name} Power OFF", cmd_off)
+
+    if has_light:
+        _append_script("luz_on", f"{name} Luz ON", cmd_luz_on)
+        _append_script("luz_off", f"{name} Luz OFF", cmd_luz_off)
+
+        if has_temp:
+            _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
+            _append_script("luz_fria", f"{name} Luz Fría", cmd_luz_fria)
+
+        if has_intensity:
+            _append_script("intensidad_alta", f"{name} Intensidad Alta", cmd_int_alta)
+            _append_script("intensidad_baja", f"{name} Intensidad Baja", cmd_int_baja)
+
+    if ns > 1:
+        for i in range(1, ns + 1):
+            key = f"{CONF_COMMAND_VELOCIDAD_PREFIX}_{i}"
+            cmd = data.get(key, f"{DEFAULT_COMMAND_VELOCIDAD_PREFIX}{i}")
+            _append_script(f"velocidad_{i}", f"{name} Velocidad {i}", cmd)
+
+    return "\n".join(lines)

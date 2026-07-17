@@ -88,6 +88,29 @@
         "data": {
           "gateway_zone": "Gateway"
         }
+      },
+      "helpers_broadlink_choice": {
+        "title": "Fanpy Pro — Broadlink",
+        "description": "Vols utilitzar un dispositiu Broadlink com a transmissor? El gateway RF continuarà rebent senyals del comandament físic per sincronitzar l'estat.",
+        "data": {
+          "use_broadlink": "Usar Broadlink com a transmissor"
+        }
+      },
+      "helpers_broadlink_config": {
+        "title": "Fanpy Pro — Configuració Broadlink",
+        "description": "Configura el dispositiu Broadlink i les comandes del comandament per a cada funció.",
+        "data": {
+          "broadlink_device_id": "Entitat remota Broadlink",
+          "remote_device": "Nom del dispositiu remot",
+          "command_on": "Comandament encès",
+          "command_off": "Comandament apagat",
+          "command_luz_on": "Comandament llum ON",
+          "command_luz_off": "Comandament llum OFF",
+          "command_luz_calida": "Comandament llum càlida",
+          "command_luz_fria": "Comandament llum freda",
+          "command_intensidad_alta": "Comandament intensitat alta",
+          "command_intensidad_baja": "Comandament intensitat baixa"
+        }
       }
     },
     "error": {

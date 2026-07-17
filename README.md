@@ -17,8 +17,9 @@ Fanpy Pro is the **backend companion** for the Fanpy Card. While the card provid
 
 ## Features
 
-- ✅ **Multi-step setup wizard** — area selection, mode choice, light/features toggles, gateway configuration
+- ✅ **Multi-step setup wizard** — area selection, mode choice, light/features toggles, gateway configuration, optional Broadlink transmitter setup
 - ✅ **Two integration modes** — Remote (Gateway RF) and Direct (native `switch.*` / `light.*` entities)
+- ✅ **Hybrid RF+Broadlink mode** — combine an ESP32+CC1101 gateway (receiver) with a Broadlink device (transmitter) for reliable code transmission
 - ✅ **Automatic entity creation** — (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
 - ✅ **Automatic entity creation** — (Direct): `select.*` only (speed selector + timer count) — fan/light entities managed externally
 - ✅ **State persistence** — entities restore their last state after HA restart (power, speed, light)
@@ -84,6 +85,11 @@ Install using HACS before the integration is added to the default HACS repositor
 - **Step 5 -- Light Features** (if has light): Toggle color temperature and brightness controls
 - **Step 6 -- Timer**: Select the number of timers (0-3)
 - **Step 7 -- Gateway**: Select the RF gateway (e.g. **Salon**, **Cocina**, **Pasillo**). The dropdown is populated from files matching `gateway_*_codes.yaml` in the `fanpypro_codes/` directory.
+- **Step 8 -- Transmitter**: Choose whether to use the **RF gateway** (ESP32+CC1101) or a **Broadlink device** as transmitter:
+  - **No (default)**: Scripts use `esphome.*_transmit_rc_switch` via the CC1101
+  - **Sí**: A new form opens to configure a Broadlink device (select entity `remote.*`, remote name, and the command codes for each function). Scripts use `remote.send_command` via the Broadlink instead
+
+> **Note**: Even when using Broadlink as transmitter, the RF gateway continues to **receive** signals from the physical remote. This keeps the HA entities synchronized when you use the physical remote.
 
 This mode creates `fan.fanpypro_*`, `light.fanpypro_*`, `select.fanpypro_*` entities plus a **Resync Luz** button (only if the fan has light). Scripts are **auto-generated** by the integration into `{custom_components_dir}/fanpypro/generated/scripts.yaml` - no manual script creation needed. Use the card in **Fanpy Remote** mode.
 
@@ -156,18 +162,33 @@ Make sure your `configuration.yaml` includes your scripts:
 script: !include scripts.yaml
 ```
 
-The generated scripts call the ESPHome `transmit_rc_switch` service to send the RF command. Entity state updates are handled by the integration's Python code — scripts only send the RF command.
+The generated scripts use one of two transmission methods depending on your configuration:
+
+- **RF Gateway only** — calls the ESPHome `transmit_rc_switch` service via the CC1101
+- **Broadlink combo** — calls `remote.send_command` via the Broadlink device
+
+Entity state updates are handled by the integration's Python code — scripts only send the RF command. You can combine both methods in the same `scripts.yaml`: some fans can use CC1101 while others use Broadlink.
+
+Make sure the command names match what you learned with `remote.learn_command`. You can test them with `remote.send_command`.
+
+- **Broadlink learn command example:**
+
+  ![Broadlink Remote Learn Command](images/broadlink_remote_learn_command.png)
+
+- **Broadlink send command test example:**
+
+  ![Broadlink Remote Send Command](images/broadlink_remote_send_command.png)
 
 ### How the flow works
 
 When you press a button in the Fanpy Card:
 
-#### Fanpy Remote mode (Gateway RF)
+#### Fanpy Remote mode (Gateway RF only)
 
 ```
 Card -> fan.set_percentage (service)
         -> FanpyProFanEntity updates HA state (is_on, percentage)
-        -> Calls script.{prefix}_velocidad_{n} (RF via ESPHome)
+        -> Calls script.{prefix}_velocidad_{n} (RF via ESPHome CC1101)
         -> Updates select.fanpypro_{prefix}_velocidad to match
 ```
 
@@ -175,7 +196,23 @@ Card -> fan.set_percentage (service)
 Card -> fan.turn_off (service)
         -> FanpyProFanEntity saves last speed, sets is_on=false
         -> Cancels active timers (Python)
-        -> Calls script.{prefix}_power_off (RF via ESPHome)
+        -> Calls script.{prefix}_power_off (RF via ESPHome CC1101)
+```
+
+#### Fanpy Remote mode (Broadlink combo)
+
+```
+Card -> fan.set_percentage (service)
+        -> FanpyProFanEntity updates HA state (is_on, percentage)
+        -> Calls script.{prefix}_velocidad_{n} (RF via Broadlink remote.send_command)
+        -> Updates select.fanpypro_{prefix}_velocidad to match
+```
+
+```
+Card -> fan.turn_off (service)
+        -> FanpyProFanEntity saves last speed, sets is_on=false
+        -> Cancels active timers (Python)
+        -> Calls script.{prefix}_power_off (RF via Broadlink remote.send_command)
 ```
 
 #### Fanpy Direct mode

@@ -129,6 +129,49 @@ def _build_schemas(
             ),
         })
 
+    if step == "helpers_broadlink_choice":
+        return vol.Schema({
+            vol.Required(CONF_USE_BROADLINK, default=data.get(CONF_USE_BROADLINK, "no")): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=[
+                        {"value": "no", "label": "No"},
+                        {"value": "yes", "label": "Sí"},
+                    ],
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                )
+            ),
+        })
+
+    if step == "helpers_broadlink_config":
+        schema = {
+            vol.Required(CONF_BROADLINK_DEVICE_ID, default=data.get(CONF_BROADLINK_DEVICE_ID, "")): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain="remote"),
+            ),
+            vol.Required(CONF_REMOTE_DEVICE, default=data.get(CONF_REMOTE_DEVICE, data.get(CONF_PREFIX, ""))): selector.TextSelector(),
+            vol.Required(CONF_COMMAND_ON, default=data.get(CONF_COMMAND_ON, DEFAULT_COMMAND_ON)): selector.TextSelector(),
+            vol.Required(CONF_COMMAND_OFF, default=data.get(CONF_COMMAND_OFF, DEFAULT_COMMAND_OFF)): selector.TextSelector(),
+        }
+        if data.get(CONF_HAS_LIGHT, False):
+            schema.update({
+                vol.Required(CONF_COMMAND_LUZ_ON, default=data.get(CONF_COMMAND_LUZ_ON, DEFAULT_COMMAND_LUZ_ON)): selector.TextSelector(),
+                vol.Required(CONF_COMMAND_LUZ_OFF, default=data.get(CONF_COMMAND_LUZ_OFF, DEFAULT_COMMAND_LUZ_OFF)): selector.TextSelector(),
+            })
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE, False):
+                schema.update({
+                    vol.Required(CONF_COMMAND_LUZ_CALIDA, default=data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)): selector.TextSelector(),
+                    vol.Required(CONF_COMMAND_LUZ_FRIA, default=data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)): selector.TextSelector(),
+                })
+            if data.get(CONF_HAS_LIGHT_INTENSITY, False):
+                schema.update({
+                    vol.Required(CONF_COMMAND_INTENSIDAD_ALTA, default=data.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)): selector.TextSelector(),
+                    vol.Required(CONF_COMMAND_INTENSIDAD_BAJA, default=data.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)): selector.TextSelector(),
+                })
+        for i in range(1, num_speeds + 1):
+            key = f"{CONF_COMMAND_VELOCIDAD_PREFIX}_{i}"
+            default = f"{DEFAULT_COMMAND_VELOCIDAD_PREFIX}{i}"
+            schema[vol.Required(key, default=data.get(key, default))] = selector.TextSelector()
+        return vol.Schema(schema)
+
     return vol.Schema({})
 
 
@@ -282,13 +325,35 @@ class FanpyProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_helpers_gateway(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
+            return await self.async_step_helpers_broadlink_choice()
+
+        gateways = await self.hass.async_add_executor_job(_scan_gateways, self.hass)
+        schema = _build_schemas(self.hass, self._data, step="helpers_gateway", gateways=gateways)
+        return self.async_show_form(step_id="helpers_gateway", data_schema=schema)
+
+    async def async_step_helpers_broadlink_choice(self, user_input=None):
+        if user_input is not None:
+            self._data[CONF_USE_BROADLINK] = user_input[CONF_USE_BROADLINK] == "yes"
+            if self._data[CONF_USE_BROADLINK]:
+                return await self.async_step_helpers_broadlink_config()
             return self.async_create_entry(
                 title=self._data[CONF_NAME],
                 data=self._data,
             )
 
-        gateways = await self.hass.async_add_executor_job(_scan_gateways, self.hass)
-        schema = _build_schemas(self.hass, self._data, step="helpers_gateway", gateways=gateways)
-        return self.async_show_form(step_id="helpers_gateway", data_schema=schema)
+        schema = _build_schemas(self.hass, self._data, step="helpers_broadlink_choice")
+        return self.async_show_form(step_id="helpers_broadlink_choice", data_schema=schema)
+
+    async def async_step_helpers_broadlink_config(self, user_input=None):
+        if user_input is not None:
+            self._data.update(user_input)
+            return self.async_create_entry(
+                title=self._data[CONF_NAME],
+                data=self._data,
+            )
+
+        num_speeds = self._data.get(CONF_NUM_SPEEDS, 6)
+        schema = _build_schemas(self.hass, self._data, step="helpers_broadlink_config", num_speeds=num_speeds)
+        return self.async_show_form(step_id="helpers_broadlink_config", data_schema=schema)
 
 

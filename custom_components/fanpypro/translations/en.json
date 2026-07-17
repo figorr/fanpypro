@@ -88,6 +88,29 @@
         "data": {
           "gateway_zone": "Gateway"
         }
+      },
+      "helpers_broadlink_choice": {
+        "title": "Fanpy Pro — Broadlink",
+        "description": "Do you want to use a Broadlink device as transmitter? The RF gateway will keep receiving signals from the physical remote to synchronize state.",
+        "data": {
+          "use_broadlink": "Use Broadlink as transmitter"
+        }
+      },
+      "helpers_broadlink_config": {
+        "title": "Fanpy Pro — Broadlink Configuration",
+        "description": "Configure the Broadlink device and the remote commands for each function.",
+        "data": {
+          "broadlink_device_id": "Broadlink remote entity",
+          "remote_device": "Remote device name",
+          "command_on": "Power ON command",
+          "command_off": "Power OFF command",
+          "command_luz_on": "Light ON command",
+          "command_luz_off": "Light OFF command",
+          "command_luz_calida": "Warm light command",
+          "command_luz_fria": "Cool light command",
+          "command_intensidad_alta": "High intensity command",
+          "command_intensidad_baja": "Low intensity command"
+        }
       }
     },
     "error": {

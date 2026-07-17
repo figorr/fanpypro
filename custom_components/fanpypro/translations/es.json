@@ -88,6 +88,29 @@
         "data": {
           "gateway_zone": "Gateway"
         }
+      },
+      "helpers_broadlink_choice": {
+        "title": "Fanpy Pro — Broadlink",
+        "description": "¿Deseas usar un dispositivo Broadlink como transmisor? El gateway RF seguirá recibiendo señales del mando físico para sincronizar el estado.",
+        "data": {
+          "use_broadlink": "Usar Broadlink como transmisor"
+        }
+      },
+      "helpers_broadlink_config": {
+        "title": "Fanpy Pro — Configuración Broadlink",
+        "description": "Configura el dispositivo Broadlink y los comandos del mando para cada función.",
+        "data": {
+          "broadlink_device_id": "Entidad remota Broadlink",
+          "remote_device": "Nombre del dispositivo remoto",
+          "command_on": "Comando encendido",
+          "command_off": "Comando apagado",
+          "command_luz_on": "Comando luz ON",
+          "command_luz_off": "Comando luz OFF",
+          "command_luz_calida": "Comando luz cálida",
+          "command_luz_fria": "Comando luz fría",
+          "command_intensidad_alta": "Comando intensidad alta",
+          "command_intensidad_baja": "Comando intensidad baja"
+        }
       }
     },
     "error": {
