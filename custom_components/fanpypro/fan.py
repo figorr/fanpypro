@@ -78,13 +78,23 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
         if not self._last_percentage:
             self._last_percentage = self._percentage_for_level(1)
 
-        self.async_write_ha_state()
         self.async_on_remove(
             self.hass.bus.async_listen("state_changed", self._handle_speed_change)
         )
         self.async_on_remove(
             self.hass.bus.async_listen("timer.finished", self._handle_timer_finished)
         )
+
+        self.async_write_ha_state()
+
+        if self._attr_is_on and self._attr_percentage > 0:
+            level = self._level_from_percentage(self._attr_percentage)
+            speed_select = f"select.{CONF_ENTITY_PREFIX}_{self._prefix}_velocidad"
+            await self.hass.services.async_call(
+                "select", "select_option",
+                {"entity_id": speed_select, "option": str(level)},
+                blocking=True
+            )
 
     async def _handle_timer_finished(self, event) -> None:
         entity_id = event.data.get("entity_id", "")
@@ -103,7 +113,8 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
                 if percentage == self._attr_percentage:
                     return
                 self._attr_percentage = percentage
-                self._last_percentage = percentage
+                if percentage > 0:
+                    self._last_percentage = percentage
                 self.async_write_ha_state()
             except (ValueError, TypeError):
                 pass
