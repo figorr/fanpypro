@@ -122,5 +122,35 @@
     "abort": {
       "already_configured": "Aquesta \u00e0rea ja est\u00e0 configurada"
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fanpy Pro — Opcions",
+        "description": "Vols utilitzar un dispositiu Broadlink com a transmissor? El gateway RF continuar\u00e0 rebent senyals del comandament f\u00edsic per sincronitzar l'estat.",
+        "data": {
+          "use_broadlink": "Usar Broadlink com a transmissor"
+        }
+      },
+      "broadlink_config": {
+        "title": "Fanpy Pro — Configuraci\u00f3 Broadlink",
+        "description": "Configura el dispositiu Broadlink i les comandes del comandament per a cada funci\u00f3.",
+        "data": {
+          "broadlink_device_id": "Entitat remota Broadlink",
+          "remote_device": "Nom del dispositiu remot",
+          "command_on": "Comandament enc\u00e8s",
+          "command_off": "Comandament apagat",
+          "command_luz_on": "Comandament llum ON",
+          "command_luz_off": "Comandament llum OFF",
+          "command_luz_calida": "Comandament llum c\u00e0lida",
+          "command_luz_fria": "Comandament llum freda",
+          "command_intensidad_alta": "Comandament intensitat alta",
+          "command_intensidad_baja": "Comandament intensitat baixa"
+        }
+      }
+    },
+    "abort": {
+      "not_supported": "Les opcions no estan disponibles per a instal\u00b7lacions en mode directe."
+    }
   }
 }

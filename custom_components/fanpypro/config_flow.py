@@ -356,4 +356,9 @@ class FanpyProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         schema = _build_schemas(self.hass, self._data, step="helpers_broadlink_config", num_speeds=num_speeds)
         return self.async_show_form(step_id="helpers_broadlink_config", data_schema=schema)
 
+    @staticmethod
+    def async_get_options_flow(config_entry):
+        from .options_flow import FanpyProOptionsFlowHandler
+        return FanpyProOptionsFlowHandler(config_entry)
+
 

@@ -122,5 +122,35 @@
     "abort": {
       "already_configured": "Esta \u00e1rea ya est\u00e1 configurada"
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fanpy Pro — Opciones",
+        "description": "\u00bfDeseas usar un dispositivo Broadlink como transmisor? El gateway RF seguir\u00e1 recibiendo se\u00f1ales del mando f\u00edsico para sincronizar el estado.",
+        "data": {
+          "use_broadlink": "Usar Broadlink como transmisor"
+        }
+      },
+      "broadlink_config": {
+        "title": "Fanpy Pro — Configuraci\u00f3n Broadlink",
+        "description": "Configura el dispositivo Broadlink y los comandos del mando para cada funci\u00f3n.",
+        "data": {
+          "broadlink_device_id": "Entidad remota Broadlink",
+          "remote_device": "Nombre del dispositivo remoto",
+          "command_on": "Comando encendido",
+          "command_off": "Comando apagado",
+          "command_luz_on": "Comando luz ON",
+          "command_luz_off": "Comando luz OFF",
+          "command_luz_calida": "Comando luz c\u00e1lida",
+          "command_luz_fria": "Comando luz fr\u00eda",
+          "command_intensidad_alta": "Comando intensidad alta",
+          "command_intensidad_baja": "Comando intensidad baja"
+        }
+      }
+    },
+    "abort": {
+      "not_supported": "Las opciones no est\u00e1n disponibles para instalaciones en modo directo."
+    }
   }
 }
