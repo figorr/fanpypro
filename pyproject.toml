@@ -4,7 +4,7 @@ build-backend = "setuptools.backends._legacy:_Backend"
 
 [project]
 name = "fanpy"
-version = "1.1.0"
+version = "1.1.1"
 description = "Custom Home Assistant integration for ceiling fan configuration"
 authors = [
     { name = "figorr", email = "jdcuartero@yahoo.es" }

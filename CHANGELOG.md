@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/figorr/fanpypro/compare/v1.1.0...v1.1.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* fix fan speed after restart ([803de34](https://github.com/figorr/fanpypro/commit/803de34f18bbd8e727e966c601b9030caab5b277))
+* fix handle speed change at restart ([ebc0ab0](https://github.com/figorr/fanpypro/commit/ebc0ab0e9eda46774f7c9ca714ce586a9beb759c))
+
 # [1.1.0](https://github.com/figorr/fanpypro/compare/v1.0.3...v1.1.0) (2026-07-17)
 
 
