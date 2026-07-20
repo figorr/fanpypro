@@ -11,6 +11,20 @@
 
 Custom integration for Home Assistant to configure ceiling fans for use with the [Fanpy Card](https://github.com/figorr/fanpy-card) Lovelace card.
 
+## History
+
+Fanpy Pro is the evolution of the [Fanpy](https://github.com/figorr/fanpy) integration.
+
+Fanpy allowed configuring ceiling fans using a **Broadlink device** to transmit RF commands, making non-smart fans controllable from Home Assistant. However, the main problem was desynchronization: when someone used the **physical remote**, the integration had no way of knowing the fan had changed state.
+
+Fanpy Pro was born to solve this. The idea was to build a combined RF receiver and transmitter using an **ESP32 + CC1101 module** running **ESPHome** (based on the [Daedilus dual-pin wiring](https://esphome.io/projects/daedilus.html)). This way the integration could capture every RF code sent by the physical remote and keep state perfectly synchronized — removing the need for a Broadlink device entirely.
+
+**More info** can be found at [ESPHome project details](https://github.com/figorr/fanpypro/blob/master/esphome/README.md)
+
+However, while all codes are captured correctly by ESPHome, some of them fail to trigger the fan when retransmitted (what appears to be an ESPHome bug). To work around this, Fanpy Pro introduced the **Hybrid mode**: the ESP32+CC1101 continues **receiving** all codes from the physical remote (keeping HA synchronized), while a **Broadlink device** handles **transmission** using the previously learned codes. This gives reliable synchronization with zero desync.
+
+The Hybrid mode has been tested on **Inspire** brand fans sold at Leroy Merlin, specifically the **Huelva L** and **Sirocco Plus** models, where it works perfectly. If ESPHome transmission reliability improves in the future, the Broadlink could be removed entirely and the CC1101 alone would handle both receiving and transmitting.
+
 ## Purpose
 
 Fanpy Pro is the **backend companion** for the Fanpy Card. While the card provides the frontend UI, this integration provides the configuration wizard and generates all the necessary entities and scripts.
@@ -23,7 +37,7 @@ Fanpy Pro is the **backend companion** for the Fanpy Card. While the card provid
 - ✅ **Automatic entity creation** — (Remote): `fan.*` (power + speed), `light.*` (light), `select.*` (speed selector + timer count)
 - ✅ **Automatic entity creation** — (Direct): `select.*` only (speed selector + timer count) — fan/light entities managed externally
 - ✅ **State persistence** — entities restore their last state after HA restart (power, speed, light)
-- ✅ **Timer support** — configurable number of timer buttons (0-3), exposed via a `select.fanpypro_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off.
+- ✅ **Timer support** — configurable number of timer buttons (0-3), exposed via a `select.fanpypro_<prefix>_num_timers` entity that the card reads at runtime. Timer entities are created manually with the native HA timer helper; the fan entity cancels active timers automatically when the fan turns off. Timer entities entitiy_id should look like `timer.ventilador_{area}_*`.
 - ✅ **Multi-language support** — English, Spanish, Catalan
 - ✅ **HACS compatible**
 

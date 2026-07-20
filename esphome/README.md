@@ -126,3 +126,9 @@ If the state doesn't correct on the first press, press again.
 | `gateway-pasillo.yaml` | Hallway gateway (IP: 192.168.2.152) |
 | `secrets.yaml` | Credentials (do not commit to git) |
 | `../custom_components/fanpypro/codes/gateway_template_codes.yaml` | Template for creating codes files |
+
+## Case
+
+If you need a case for the ESP32 and CC1101 you can print the case shared by @danoman at Printables:
+
+[![ESP32 CC1101 Case](img/case-printables.jpg)](https://www.printables.com/model/1736736-esp32-cc1101-case-usb-c-devkit)
