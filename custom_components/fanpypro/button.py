@@ -40,5 +40,9 @@ class FanpyProLuzResyncButton(ButtonEntity):
     async def async_press(self) -> None:
         light_entity = self.hass.data.get(DOMAIN, {}).get(self._entry.entry_id, {}).get("light_entity")
         if light_entity:
-            await light_entity.async_process_rf_command(["luz_on"])
-            _LOGGER.info("Luz resync button pressed for %s", self._prefix)
+            light_entity._attr_is_on = not light_entity._attr_is_on
+            light_entity.async_write_ha_state()
+            _LOGGER.info(
+                "Luz resync button pressed for %s — toggled to %s",
+                self._prefix, light_entity._attr_is_on,
+            )
