@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/figorr/fanpypro/compare/v1.1.2...v1.1.3) (2026-07-21)
+
+
+### Bug Fixes
+
+* fix light resync button ([825bcaa](https://github.com/figorr/fanpypro/commit/825bcaa34db35b34597ae367850f54723e301af7))
+
 ## [1.1.2](https://github.com/figorr/fanpypro/compare/v1.1.1...v1.1.2) (2026-07-18)
 
 
