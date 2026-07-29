@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/figorr/fanpypro/compare/v1.1.3...v1.1.4) (2026-07-29)
+
+
+### Bug Fixes
+
+* fix esphome chip revision ([54eb4d3](https://github.com/figorr/fanpypro/commit/54eb4d37a385b2760c899777899bfff34948189c))
+
 ## [1.1.3](https://github.com/figorr/fanpypro/compare/v1.1.2...v1.1.3) (2026-07-21)
 
 
