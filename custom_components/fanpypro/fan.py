@@ -9,6 +9,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import *
+from . import _normalize_rf_code
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, prefix: str, name: str, num_speeds: int) -> None:
         self._lock = asyncio.Lock()
-        self._last_tx_time = 0.0
+        self._last_tx_codes: dict[str, float] = {}
         self._entry = entry
         self._prefix = prefix
         self._num_speeds = num_speeds
@@ -127,12 +128,34 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
     def _percentage_for_level(self, level: int) -> int:
         return min(round(level / self._num_speeds * 100), 100)
 
-    async def async_process_rf_command(self, matching_commands: list[str]) -> None:
+    def _tx_code(self, cmd_key: str) -> str | None:
+        zone = self._entry.data.get(CONF_GATEWAY_ZONE)
+        if not zone:
+            return None
+        cache = self.hass.data.get(DOMAIN, {}).get("codes_cache", {})
+        fan_codes = cache.get(zone, {}).get(self._prefix, {})
+        cmd_data = fan_codes.get(cmd_key)
+        if isinstance(cmd_data, dict):
+            return _normalize_rf_code(cmd_data.get("code"))
+        return None
+
+    def _record_tx_codes(self, codes) -> None:
+        now = time.monotonic()
+        self._last_tx_codes = {
+            c: ts for c, ts in self._last_tx_codes.items()
+            if now - ts < RF_ECHO_WINDOW
+        }
+        for c in codes:
+            if c:
+                self._last_tx_codes[c] = now
+
+    async def async_process_rf_command(self, code: str, matching_commands: list[str]) -> None:
         async with self._lock:
-            if time.monotonic() - self._last_tx_time < 2.0:
-                _LOGGER.debug("Suppressed RF echo (%.1fs since last TX)", time.monotonic() - self._last_tx_time)
+            now = time.monotonic()
+            if code and code in self._last_tx_codes and now - self._last_tx_codes[code] < RF_ECHO_WINDOW:
+                _LOGGER.debug("Suppressed RF echo: code=%s (%.1fs since TX)", code, now - self._last_tx_codes[code])
                 return
-            _LOGGER.debug("async_process_rf_command: %s (is_on=%s, pct=%s%%)", matching_commands, self._attr_is_on, self._attr_percentage)
+            _LOGGER.debug("async_process_rf_command: code=%s commands=%s (is_on=%s, pct=%s%%)", code, matching_commands, self._attr_is_on, self._attr_percentage)
             if not matching_commands:
                 return
 
@@ -180,7 +203,7 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
 
-            self._last_tx_time = time.monotonic()
+            self._record_tx_codes([self._tx_code(f"velocidad{level}")])
             await self.hass.services.async_call(
                 "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
             )
@@ -207,7 +230,7 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
             self._attr_percentage = 0
             self.async_write_ha_state()
             await self._cancel_active_timers()
-            self._last_tx_time = time.monotonic()
+            self._record_tx_codes([self._tx_code("off")])
             await self.hass.services.async_call(
                 "script", f"{self._prefix}_power_off", {}, blocking=True
             )
@@ -223,7 +246,7 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
             self._attr_percentage = percentage
             self._attr_is_on = True
             self.async_write_ha_state()
-            self._last_tx_time = time.monotonic()
+            self._record_tx_codes([self._tx_code(f"velocidad{level}")])
             await self.hass.services.async_call(
                 "script", f"{self._prefix}_velocidad_{level}", {}, blocking=True
             )
