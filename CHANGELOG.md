@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/figorr/fanpypro/compare/v1.1.4...v1.1.5) (2026-08-02)
+
+
+### Bug Fixes
+
+* suppress rf echo by code instead of time window to avoid blocking buttons. ([3c6056f](https://github.com/figorr/fanpypro/commit/3c6056f05303ae3b05db2234b29dd064e64b7096))
+
 ## [1.1.4](https://github.com/figorr/fanpypro/compare/v1.1.3...v1.1.4) (2026-07-29)
 
 
