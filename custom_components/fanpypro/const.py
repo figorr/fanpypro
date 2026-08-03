@@ -57,9 +57,4 @@ CODES_DIR = "fanpypro_codes"
 DEFAULT_GATEWAY_REPEAT = 10
 DEFAULT_GATEWAY_WAIT_MS = 4733
 
-# Ventana de supresión de eco RF (segundos). Solo se descarta un código RF
-# si coincide exactamente con uno transmitido por HA dentro de esta ventana.
-# Los botones distintos del mando físico nunca se bloquean.
-RF_ECHO_WINDOW = 1.5
-
 

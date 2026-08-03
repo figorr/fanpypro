@@ -72,13 +72,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
                     fan_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("fan_entity")
                     if fan_entity:
-                        await fan_entity.async_process_rf_command(code, matching_commands)
+                        await fan_entity.async_process_rf_command(matching_commands)
 
                     light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_") or c.startswith("luz_calida") or c.startswith("luz_fria")]
                     if light_cmds:
                         light_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("light_entity")
                         if light_entity:
-                            await light_entity.async_process_rf_command(code, light_cmds)
+                            await light_entity.async_process_rf_command(light_cmds)
             except Exception as e:
                 _LOGGER.warning("Error processing RF event: %s", e)
 
@@ -210,15 +210,6 @@ async def _load_and_cache_codes(hass: HomeAssistant) -> None:
     cache = await hass.async_add_executor_job(_load)
     if cache is not None:
         hass.data.setdefault(DOMAIN, {})["codes_cache"] = cache
-
-
-def _normalize_rf_code(rc_code) -> str | None:
-    if rc_code is None:
-        return None
-    s = str(rc_code).strip()
-    if s and set(s) <= {"0", "1"}:
-        return str(int(s, 2))
-    return s or None
 
 
 def _find_commands_by_code(fan_codes: dict, code: str) -> list[str]:
