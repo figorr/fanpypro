@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/figorr/fanpypro/compare/v1.1.5...v1.1.6) (2026-08-03)
+
+
+### Bug Fixes
+
+* revert rf echo suppression to time window to fix speed off-by-one ([9bd59e0](https://github.com/figorr/fanpypro/commit/9bd59e0120d5e23e435c5df17d91da20d40f7084))
+
 ## [1.1.5](https://github.com/figorr/fanpypro/compare/v1.1.4...v1.1.5) (2026-08-02)
 
 
