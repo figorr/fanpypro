@@ -138,10 +138,12 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
 
             if "on" in matching_commands:
                 if not self._attr_is_on:
-                    self._attr_is_on = True
-                    self._attr_percentage = self._last_percentage
-                    self.async_write_ha_state()
-                    return
+                    has_speed = any(c.startswith("velocidad") for c in matching_commands)
+                    if not has_speed:
+                        self._attr_is_on = True
+                        self._attr_percentage = self._last_percentage
+                        self.async_write_ha_state()
+                        return
 
             for c in matching_commands:
                 if c.startswith("velocidad"):
