@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/figorr/fanpypro/compare/v1.1.6...v1.1.7) (2026-08-04)
+
+
+### Bug Fixes
+
+* parametrize rf echo suppression window via RF_ECHO_WINDOW ([4a57ca3](https://github.com/figorr/fanpypro/commit/4a57ca3991c2ffb2f44ced54881c63f2cc718b7e))
+
 ## [1.1.6](https://github.com/figorr/fanpypro/compare/v1.1.5...v1.1.6) (2026-08-03)
 
 
