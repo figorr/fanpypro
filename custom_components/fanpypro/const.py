@@ -57,4 +57,8 @@ CODES_DIR = "fanpypro_codes"
 DEFAULT_GATEWAY_REPEAT = 10
 DEFAULT_GATEWAY_WAIT_MS = 4733
 
+# Ventana de supresión de eco RF (segundos). Tras una transmisión de HA,
+# se ignora cualquier código RF recibido dentro de esta ventana.
+RF_ECHO_WINDOW = 2.0
+
 

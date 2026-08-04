@@ -129,7 +129,7 @@ class FanpyProFanEntity(FanEntity, RestoreEntity):
 
     async def async_process_rf_command(self, matching_commands: list[str]) -> None:
         async with self._lock:
-            if time.monotonic() - self._last_tx_time < 2.0:
+            if time.monotonic() - self._last_tx_time < RF_ECHO_WINDOW:
                 _LOGGER.debug("Suppressed RF echo (%.1fs since last TX)", time.monotonic() - self._last_tx_time)
                 return
             _LOGGER.debug("async_process_rf_command: %s (is_on=%s, pct=%s%%)", matching_commands, self._attr_is_on, self._attr_percentage)

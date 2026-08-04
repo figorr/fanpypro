@@ -53,7 +53,7 @@ class FanpyProLightEntity(LightEntity, RestoreEntity):
 
     async def async_process_rf_command(self, matching_commands: list[str]) -> None:
         async with self._lock:
-            if time.monotonic() - self._last_tx_time < 2.0:
+            if time.monotonic() - self._last_tx_time < RF_ECHO_WINDOW:
                 _LOGGER.debug("Suppressed RF echo (%.1fs since last TX)", time.monotonic() - self._last_tx_time)
                 return
             if "luz_on" in matching_commands and "luz_off" in matching_commands:
