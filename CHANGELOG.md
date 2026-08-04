@@ -1,3 +1,10 @@
+## [1.1.8](https://github.com/figorr/fanpypro/compare/v1.1.7...v1.1.8) (2026-08-04)
+
+
+### Bug Fixes
+
+* sync fan speed from physical remote when on code carries a speed ([4a7570f](https://github.com/figorr/fanpypro/commit/4a7570f66edf866febd74e9281d85c96260504a5))
+
 ## [1.1.7](https://github.com/figorr/fanpypro/compare/v1.1.6...v1.1.7) (2026-08-04)
 
 
