@@ -46,6 +46,15 @@
           "has_light_intensity": "Control de intensidad"
         }
       },
+      "direct_light_temp_modes": {
+        "title": "Fanpy Pro — Modos de Temperatura de Luz",
+        "description": "Selecciona qué modos de temperatura de color soporta la luz de este ventilador.",
+        "data": {
+          "has_light_temperature_calida": "Luz cálida",
+          "has_light_temperature_neutra": "Luz neutra",
+          "has_light_temperature_fria": "Luz fría"
+        }
+      },
       "helpers_speeds": {
         "title": "Fanpy Pro — Velocidades",
         "description": "Establece el n\u00famero de velocidades de este ventilador.",
@@ -66,6 +75,15 @@
         "data": {
           "has_light_temperature": "Control de temperatura de color",
           "has_light_intensity": "Control de intensidad"
+        }
+      },
+      "helpers_light_temp_modes": {
+        "title": "Fanpy Pro — Modos de Temperatura de Luz",
+        "description": "Selecciona qué modos de temperatura de color soporta la luz de este ventilador.",
+        "data": {
+          "has_light_temperature_calida": "Luz cálida",
+          "has_light_temperature_neutra": "Luz neutra",
+          "has_light_temperature_fria": "Luz fría"
         }
       },
       "helpers_timer": {
@@ -107,6 +125,7 @@
           "command_luz_on": "Comando luz ON",
           "command_luz_off": "Comando luz OFF",
           "command_luz_calida": "Comando luz cálida",
+          "command_luz_neutra": "Comando luz neutra",
           "command_luz_fria": "Comando luz fría",
           "command_intensidad_alta": "Comando intensidad alta",
           "command_intensidad_baja": "Comando intensidad baja"
@@ -132,6 +151,24 @@
           "use_broadlink": "Usar Broadlink como transmisor"
         }
       },
+      "light_options": {
+        "title": "Fanpy Pro — Funciones de Luz",
+        "description": "Actualiza las capacidades de la luz del ventilador.",
+        "data": {
+          "has_light": "Tiene luz",
+          "has_light_temperature": "Control de temperatura de color",
+          "has_light_intensity": "Control de intensidad"
+        }
+      },
+      "light_temp_modes": {
+        "title": "Fanpy Pro — Modos de Temperatura de Luz",
+        "description": "Selecciona qué modos de temperatura de color soporta la luz de este ventilador.",
+        "data": {
+          "has_light_temperature_calida": "Luz cálida",
+          "has_light_temperature_neutra": "Luz neutra",
+          "has_light_temperature_fria": "Luz fría"
+        }
+      },
       "broadlink_config": {
         "title": "Fanpy Pro — Configuraci\u00f3n Broadlink",
         "description": "Configura el dispositivo Broadlink y los comandos del mando para cada funci\u00f3n.",
@@ -143,6 +180,7 @@
           "command_luz_on": "Comando luz ON",
           "command_luz_off": "Comando luz OFF",
           "command_luz_calida": "Comando luz c\u00e1lida",
+          "command_luz_neutra": "Comando luz neutra",
           "command_luz_fria": "Comando luz fr\u00eda",
           "command_intensidad_alta": "Comando intensidad alta",
           "command_intensidad_baja": "Comando intensidad baja"

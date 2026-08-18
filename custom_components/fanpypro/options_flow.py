@@ -22,10 +22,8 @@ class FanpyProOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             use_broadlink = user_input[CONF_USE_BROADLINK] == "yes"
             new_data = {**self._config_entry.data, CONF_USE_BROADLINK: use_broadlink}
-            if use_broadlink:
-                self._pending_data = new_data
-                return await self.async_step_broadlink_config()
-            return await self._finish(new_data)
+            self._pending_data = new_data
+            return await self.async_step_light_options()
 
         current = self._config_entry.data.get(CONF_USE_BROADLINK, False)
         return self.async_show_form(
@@ -42,6 +40,30 @@ class FanpyProOptionsFlowHandler(config_entries.OptionsFlow):
                 ),
             }),
         )
+
+    async def async_step_light_options(self, user_input=None):
+        if user_input is not None:
+            new_data = {**self._pending_data, **user_input}
+            self._pending_data = new_data
+            if self._pending_data.get(CONF_HAS_LIGHT_TEMPERATURE, False):
+                return await self.async_step_light_temp_modes()
+            return await self._after_light_options()
+
+        schema = _build_schemas(self.hass, self._pending_data, step="helpers_light_options")
+        return self.async_show_form(step_id="light_options", data_schema=schema)
+
+    async def async_step_light_temp_modes(self, user_input=None):
+        if user_input is not None:
+            self._pending_data = {**self._pending_data, **user_input}
+            return await self._after_light_options()
+
+        schema = _build_schemas(self.hass, self._pending_data, step="helpers_light_temp_modes")
+        return self.async_show_form(step_id="light_temp_modes", data_schema=schema)
+
+    async def _after_light_options(self):
+        if self._pending_data.get(CONF_USE_BROADLINK, False):
+            return await self.async_step_broadlink_config()
+        return await self._finish(self._pending_data)
 
     async def async_step_broadlink_config(self, user_input=None):
         if user_input is not None:

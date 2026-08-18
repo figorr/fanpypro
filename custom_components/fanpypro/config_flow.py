@@ -84,6 +84,13 @@ def _build_schemas(
             vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
         })
 
+    if step == "direct_light_temp_modes":
+        return vol.Schema({
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, default=data.get(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, True)): selector.BooleanSelector(),
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, default=data.get(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, False)): selector.BooleanSelector(),
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE_FRIA, default=data.get(CONF_HAS_LIGHT_TEMPERATURE_FRIA, True)): selector.BooleanSelector(),
+        })
+
     if step == "helpers_speeds":
         return vol.Schema({
             vol.Required(CONF_NUM_SPEEDS, default=str(data.get(CONF_NUM_SPEEDS, 6))): selector.SelectSelector(
@@ -101,6 +108,20 @@ def _build_schemas(
 
     if step == "helpers_light_features":
         return vol.Schema({
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, False)): selector.BooleanSelector(),
+            vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
+        })
+
+    if step == "helpers_light_temp_modes":
+        return vol.Schema({
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, default=data.get(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, True)): selector.BooleanSelector(),
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, default=data.get(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, False)): selector.BooleanSelector(),
+            vol.Optional(CONF_HAS_LIGHT_TEMPERATURE_FRIA, default=data.get(CONF_HAS_LIGHT_TEMPERATURE_FRIA, True)): selector.BooleanSelector(),
+        })
+
+    if step == "helpers_light_options":
+        return vol.Schema({
+            vol.Optional(CONF_HAS_LIGHT, default=data.get(CONF_HAS_LIGHT, False)): selector.BooleanSelector(),
             vol.Optional(CONF_HAS_LIGHT_TEMPERATURE, default=data.get(CONF_HAS_LIGHT_TEMPERATURE, False)): selector.BooleanSelector(),
             vol.Optional(CONF_HAS_LIGHT_INTENSITY, default=data.get(CONF_HAS_LIGHT_INTENSITY, False)): selector.BooleanSelector(),
         })
@@ -157,10 +178,18 @@ def _build_schemas(
                 vol.Required(CONF_COMMAND_LUZ_OFF, default=data.get(CONF_COMMAND_LUZ_OFF, DEFAULT_COMMAND_LUZ_OFF)): selector.TextSelector(),
             })
             if data.get(CONF_HAS_LIGHT_TEMPERATURE, False):
-                schema.update({
-                    vol.Required(CONF_COMMAND_LUZ_CALIDA, default=data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)): selector.TextSelector(),
-                    vol.Required(CONF_COMMAND_LUZ_FRIA, default=data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)): selector.TextSelector(),
-                })
+                if data.get(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, True):
+                    schema.update({
+                        vol.Required(CONF_COMMAND_LUZ_CALIDA, default=data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)): selector.TextSelector(),
+                    })
+                if data.get(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, False):
+                    schema.update({
+                        vol.Required(CONF_COMMAND_LUZ_NEUTRA, default=data.get(CONF_COMMAND_LUZ_NEUTRA, DEFAULT_COMMAND_LUZ_NEUTRA)): selector.TextSelector(),
+                    })
+                if data.get(CONF_HAS_LIGHT_TEMPERATURE_FRIA, True):
+                    schema.update({
+                        vol.Required(CONF_COMMAND_LUZ_FRIA, default=data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)): selector.TextSelector(),
+                    })
             if data.get(CONF_HAS_LIGHT_INTENSITY, False):
                 schema.update({
                     vol.Required(CONF_COMMAND_INTENSIDAD_ALTA, default=data.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)): selector.TextSelector(),
@@ -269,10 +298,20 @@ class FanpyProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_direct_light_features(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
+            if self._data.get(CONF_HAS_LIGHT_TEMPERATURE, False):
+                return await self.async_step_direct_light_temp_modes()
             return await self.async_step_helpers_timer()
 
         schema = _build_schemas(self.hass, self._data, step="direct_light_features")
         return self.async_show_form(step_id="direct_light_features", data_schema=schema)
+
+    async def async_step_direct_light_temp_modes(self, user_input=None):
+        if user_input is not None:
+            self._data.update(user_input)
+            return await self.async_step_helpers_timer()
+
+        schema = _build_schemas(self.hass, self._data, step="direct_light_temp_modes")
+        return self.async_show_form(step_id="direct_light_temp_modes", data_schema=schema)
 
     async def async_step_helpers_speeds(self, user_input=None):
         if user_input is not None:
@@ -296,10 +335,20 @@ class FanpyProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_helpers_light_features(self, user_input=None):
         if user_input is not None:
             self._data.update(user_input)
+            if self._data.get(CONF_HAS_LIGHT_TEMPERATURE, False):
+                return await self.async_step_helpers_light_temp_modes()
             return await self.async_step_helpers_timer()
 
         schema = _build_schemas(self.hass, self._data, step="helpers_light_features")
         return self.async_show_form(step_id="helpers_light_features", data_schema=schema)
+
+    async def async_step_helpers_light_temp_modes(self, user_input=None):
+        if user_input is not None:
+            self._data.update(user_input)
+            return await self.async_step_helpers_timer()
+
+        schema = _build_schemas(self.hass, self._data, step="helpers_light_temp_modes")
+        return self.async_show_form(step_id="helpers_light_temp_modes", data_schema=schema)
 
     async def async_step_helpers_timer(self, user_input=None):
         if user_input is not None:

@@ -46,6 +46,15 @@
           "has_light_intensity": "Brightness control"
         }
       },
+      "direct_light_temp_modes": {
+        "title": "Fanpy Pro — Light Temperature Modes",
+        "description": "Select which color temperature modes this fan light supports.",
+        "data": {
+          "has_light_temperature_calida": "Warm light",
+          "has_light_temperature_neutra": "Neutral light",
+          "has_light_temperature_fria": "Cool light"
+        }
+      },
       "helpers_speeds": {
         "title": "Fanpy Pro — Speeds",
         "description": "Set the number of speeds this fan has.",
@@ -66,6 +75,15 @@
         "data": {
           "has_light_temperature": "Color temperature control",
           "has_light_intensity": "Brightness control"
+        }
+      },
+      "helpers_light_temp_modes": {
+        "title": "Fanpy Pro — Light Temperature Modes",
+        "description": "Select which color temperature modes this fan light supports.",
+        "data": {
+          "has_light_temperature_calida": "Warm light",
+          "has_light_temperature_neutra": "Neutral light",
+          "has_light_temperature_fria": "Cool light"
         }
       },
       "helpers_timer": {
@@ -107,6 +125,7 @@
           "command_luz_on": "Light ON command",
           "command_luz_off": "Light OFF command",
           "command_luz_calida": "Warm light command",
+          "command_luz_neutra": "Neutral light command",
           "command_luz_fria": "Cool light command",
           "command_intensidad_alta": "High intensity command",
           "command_intensidad_baja": "Low intensity command"
@@ -132,6 +151,24 @@
           "use_broadlink": "Use Broadlink as transmitter"
         }
       },
+      "light_options": {
+        "title": "Fanpy Pro — Light Features",
+        "description": "Update the fan light capabilities.",
+        "data": {
+          "has_light": "Has light",
+          "has_light_temperature": "Color temperature control",
+          "has_light_intensity": "Brightness control"
+        }
+      },
+      "light_temp_modes": {
+        "title": "Fanpy Pro — Light Temperature Modes",
+        "description": "Select which color temperature modes this fan light supports.",
+        "data": {
+          "has_light_temperature_calida": "Warm light",
+          "has_light_temperature_neutra": "Neutral light",
+          "has_light_temperature_fria": "Cool light"
+        }
+      },
       "broadlink_config": {
         "title": "Fanpy Pro — Broadlink Configuration",
         "description": "Configure the Broadlink device and the remote commands for each function.",
@@ -143,6 +180,7 @@
           "command_luz_on": "Light ON command",
           "command_luz_off": "Light OFF command",
           "command_luz_calida": "Warm light command",
+          "command_luz_neutra": "Neutral light command",
           "command_luz_fria": "Cool light command",
           "command_intensidad_alta": "High intensity command",
           "command_intensidad_baja": "Low intensity command"

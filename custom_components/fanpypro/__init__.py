@@ -74,7 +74,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     if fan_entity:
                         await fan_entity.async_process_rf_command(matching_commands)
 
-                    light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_") or c.startswith("luz_calida") or c.startswith("luz_fria")]
+                    light_cmds = [c for c in matching_commands if c.startswith("luz_") or c.startswith("intensidad_")]
                     if light_cmds:
                         light_entity = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("light_entity")
                         if light_entity:
@@ -343,8 +343,12 @@ def _build_gateway_scripts_yaml(
         commands.append(("luz_on", f"{name} Luz ON", "luz_on"))
         commands.append(("luz_off", f"{name} Luz OFF", "luz_off"))
         if has_temp:
-            commands.append(("luz_calida", f"{name} Luz Cálida", "luz_calida"))
-            commands.append(("luz_fria", f"{name} Luz Fría", "luz_fria"))
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, True):
+                commands.append(("luz_calida", f"{name} Luz Cálida", "luz_calida"))
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, False):
+                commands.append(("luz_neutra", f"{name} Luz Neutra", "luz_neutra"))
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE_FRIA, True):
+                commands.append(("luz_fria", f"{name} Luz Fría", "luz_fria"))
         if has_intensity:
             commands.append(("intensidad_alta", f"{name} Intensidad Alta", "intensidad_alta"))
             commands.append(("intensidad_baja", f"{name} Intensidad Baja", "intensidad_baja"))
@@ -426,6 +430,7 @@ def _build_broadlink_scripts_yaml(
     cmd_luz_on = data.get(CONF_COMMAND_LUZ_ON, DEFAULT_COMMAND_LUZ_ON)
     cmd_luz_off = data.get(CONF_COMMAND_LUZ_OFF, DEFAULT_COMMAND_LUZ_OFF)
     cmd_luz_calida = data.get(CONF_COMMAND_LUZ_CALIDA, DEFAULT_COMMAND_LUZ_CALIDA)
+    cmd_luz_neutra = data.get(CONF_COMMAND_LUZ_NEUTRA, DEFAULT_COMMAND_LUZ_NEUTRA)
     cmd_luz_fria = data.get(CONF_COMMAND_LUZ_FRIA, DEFAULT_COMMAND_LUZ_FRIA)
     cmd_int_alta = data.get(CONF_COMMAND_INTENSIDAD_ALTA, DEFAULT_COMMAND_INTENSIDAD_ALTA)
     cmd_int_baja = data.get(CONF_COMMAND_INTENSIDAD_BAJA, DEFAULT_COMMAND_INTENSIDAD_BAJA)
@@ -468,8 +473,12 @@ def _build_broadlink_scripts_yaml(
         _append_script("luz_off", f"{name} Luz OFF", cmd_luz_off)
 
         if has_temp:
-            _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
-            _append_script("luz_fria", f"{name} Luz Fría", cmd_luz_fria)
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE_CALIDA, True):
+                _append_script("luz_calida", f"{name} Luz Cálida", cmd_luz_calida)
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE_NEUTRA, False):
+                _append_script("luz_neutra", f"{name} Luz Neutra", cmd_luz_neutra)
+            if data.get(CONF_HAS_LIGHT_TEMPERATURE_FRIA, True):
+                _append_script("luz_fria", f"{name} Luz Fría", cmd_luz_fria)
 
         if has_intensity:
             _append_script("intensidad_alta", f"{name} Intensidad Alta", cmd_int_alta)
