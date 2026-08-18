@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/figorr/fanpypro/compare/v1.1.8...v1.2.0) (2026-08-18)
+
+
+### Features
+
+* add neutral light temperature mode and light options flow ([dd04943](https://github.com/figorr/fanpypro/commit/dd049437d902c8ceff8c892907fb6319899e1444))
+
 ## [1.1.8](https://github.com/figorr/fanpypro/compare/v1.1.7...v1.1.8) (2026-08-04)
 
 
