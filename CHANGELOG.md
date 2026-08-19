@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/figorr/fanpypro/compare/v1.2.0...v1.3.0) (2026-08-19)
+
+
+### Features
+
+* add fan resync button to sync fan state without resending command ([9486023](https://github.com/figorr/fanpypro/commit/94860237b3c7b824136520fc719e4af17594eccc))
+
 # [1.2.0](https://github.com/figorr/fanpypro/compare/v1.1.8...v1.2.0) (2026-08-18)
 
 
