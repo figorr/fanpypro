@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/figorr/fanpypro/compare/v1.3.0...v1.3.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* sync speed select entity on fan resync ([e484004](https://github.com/figorr/fanpypro/commit/e484004e258bc4b4bd584c76a1412de28ad344b5))
+
 # [1.3.0](https://github.com/figorr/fanpypro/compare/v1.2.0...v1.3.0) (2026-08-19)
 
 
