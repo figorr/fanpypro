@@ -52,6 +52,15 @@ class FanpyProFanResyncButton(ButtonEntity):
             else:
                 fan_entity._attr_percentage = 0
             fan_entity.async_write_ha_state()
+
+            level = fan_entity._level_from_percentage(fan_entity._attr_percentage)
+            speed_select = f"select.{CONF_ENTITY_PREFIX}_{fan_entity._prefix}_velocidad"
+            if speed_select in self.hass.states.async_entity_ids():
+                await self.hass.services.async_call(
+                    "select", "select_option",
+                    {"entity_id": speed_select, "option": str(level)},
+                    blocking=True
+                )
             _LOGGER.info(
                 "Ventilador resync button pressed for %s — toggled to %s",
                 self._prefix, fan_entity._attr_is_on,
