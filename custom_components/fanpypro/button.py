@@ -36,7 +36,7 @@ class FanpyProFanResyncButton(ButtonEntity):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, prefix: str, name: str) -> None:
         self._entry = entry
         self._prefix = prefix
-        self._attr_name = f"FanpyPro {name} Resync Ventilador"
+        self._attr_name = f"FanpyPro {name} Resync Fan"
         self._attr_unique_id = f"{CONF_ENTITY_PREFIX}_{prefix}_resync_fan"
         self._attr_icon = "mdi:sync"
 
@@ -53,14 +53,15 @@ class FanpyProFanResyncButton(ButtonEntity):
                 fan_entity._attr_percentage = 0
             fan_entity.async_write_ha_state()
 
-            level = fan_entity._level_from_percentage(fan_entity._attr_percentage)
-            speed_select = f"select.{CONF_ENTITY_PREFIX}_{fan_entity._prefix}_velocidad"
-            if speed_select in self.hass.states.async_entity_ids():
-                await self.hass.services.async_call(
-                    "select", "select_option",
-                    {"entity_id": speed_select, "option": str(level)},
-                    blocking=True
-                )
+            if fan_entity._attr_is_on:
+                level = fan_entity._level_from_percentage(fan_entity._attr_percentage)
+                speed_select = f"select.{CONF_ENTITY_PREFIX}_{fan_entity._prefix}_velocidad"
+                if speed_select in self.hass.states.async_entity_ids():
+                    await self.hass.services.async_call(
+                        "select", "select_option",
+                        {"entity_id": speed_select, "option": str(level)},
+                        blocking=True
+                    )
             _LOGGER.info(
                 "Ventilador resync button pressed for %s — toggled to %s",
                 self._prefix, fan_entity._attr_is_on,
